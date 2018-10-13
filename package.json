@@ -7,7 +7,9 @@
   "author": "Susisu <susisu2413@yahoo.co.jp>",
   "license": "MIT",
   "dependencies": {
-    "loquat": "~2.0.0"
+    "loquat": "~2.0.0",
+    "loquat-core": "~2.0.0",
+    "loquat-token": "~2.0.0"
   },
   "devDependencies": {
     "typescript": "^3.1.1"

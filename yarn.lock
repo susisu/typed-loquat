@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-loquat-char@~2.0.0:
+loquat-char@^2.0.0, loquat-char@~2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/loquat-char/-/loquat-char-2.0.1.tgz#f4bb23a17a619f6600859f47726b2323f5d1f40d"
   dependencies:
@@ -38,6 +38,14 @@ loquat-prim@^2.0.0, loquat-prim@~2.0.0:
 loquat-qo@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/loquat-qo/-/loquat-qo-2.0.0.tgz#064cf86a10e10e3cad71514788d6d847ccc7c6dd"
+
+loquat-token@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/loquat-token/-/loquat-token-2.0.0.tgz#f2451d2bd04fb018de004f9087be130e86ec60dc"
+  dependencies:
+    loquat-char "^2.0.0"
+    loquat-combinators "^2.0.0"
+    loquat-prim "^2.0.0"
 
 loquat@~2.0.0:
   version "2.0.0"
