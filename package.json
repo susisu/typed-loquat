@@ -1,0 +1,15 @@
+{
+  "name": "typed-loquat",
+  "version": "2.0.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "repository": "https://github.com/susisu/typed-loquat",
+  "author": "Susisu <susisu2413@yahoo.co.jp>",
+  "license": "MIT",
+  "dependencies": {
+    "loquat": "~2.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^3.1.1"
+  }
+}
