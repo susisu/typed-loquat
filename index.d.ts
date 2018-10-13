@@ -101,9 +101,9 @@ export declare class Config {
     readonly tabWidth: number;
     readonly unicode: boolean;
 }
-export declare class State<S, U> {
+export declare class State<S = string, U = undefined> {
     constructor(config: Config, input: S, pos: SourcePos, userState: U);
-    static equal<S, U>(
+    static equal<S = string, U = undefined>(
         stateA: State<S, U>,
         stateB: State<S, U>,
         inputEqual: (inputA: S, inputB: S) => boolean,
@@ -118,7 +118,7 @@ export declare class State<S, U> {
     setPosition(pos: SourcePos): State<S, U>
     setUserState<U2>(userState: U2): State<S, U2>;
 }
-export declare class Result<S, U, A> {
+export declare class Result<A, S = string, U = undefined> {
     constructor(
         consumed: boolean,
         success: boolean,
@@ -126,17 +126,25 @@ export declare class Result<S, U, A> {
         val?: A | undefined,
         state?: State<S, U> | undefined
     );
-    static equal<S, U, A>(
-        resA: Result<S, U, A>,
-        resB: Result<S, U, A>,
+    static equal<A, S = string, U = undefined>(
+        resA: Result<A, S, U>,
+        resB: Result<A, S, U>,
         valEqual: (valA: A, valB: A) => boolean,
         inputEqual: (inputA: S, inputB: S) => boolean,
         userStateEqual: (userStateA: U, userStateB: U) => boolean
     ): boolean;
-    static csuc<S, U, A>(err: AbstractParseError, val: A, state: State<S, U>): Result<S, U, A>;
-    static cerr<S, U, A>(err: AbstractParseError): Result<S, U, A>;
-    static esuc<S, U, A>(err: AbstractParseError, val: A, state: State<S, U>): Result<S, U, A>;
-    static eerr<S, U, A>(err: AbstractParseError): Result<S, U, A>;
+    static csuc<A, S = string, U = undefined>(
+        err: AbstractParseError,
+        val: A,
+        state: State<S, U>
+    ): Result<A, S, U>;
+    static cerr<A, S = string, U = undefined>(err: AbstractParseError): Result<A, S, U>;
+    static esuc<A, S = string, U = undefined>(
+        err: AbstractParseError,
+        val: A,
+        state: State<S, U>
+    ): Result<A, S, U>;
+    static eerr<A, S = string, U = undefined>(err: AbstractParseError): Result<A, S, U>;
     readonly consumed: boolean;
     readonly success: boolean;
     readonly err: AbstractParseError;
@@ -146,94 +154,96 @@ export declare class Result<S, U, A> {
 export declare type ParseResult<A> =
       { success: true, value: A }
     | { success: false, err: AbstractParseError };
-export declare abstract class AbstractParser<S, U, A> {
-    run(state: State<S, U>): Result<S, U, A>;
+export declare abstract class AbstractParser<A, S, U> {
+    run(state: State<S, U>): Result<A, S, U>;
     parse(name: string, input: S, userState: U, opts: ConfigOptions): ParseResult<A>;
-    map<B>(func: (val: A) => B): AbstractParser<S, U, B>;
-    return<B>(val: B): AbstractParser<S, U, B>;
-    ap(parser: MethodApArg<S, U, A>): MethodApRet<S, U, A>;
-    left<B>(parser: AbstractParser<S, U, B>): AbstractParser<S, U, A>;
-    skip<B>(parser: AbstractParser<S, U, B>): AbstractParser<S, U, A>;
-    right<B>(parser: AbstractParser<S, U, B>): AbstractParser<S, U, B>;
-    bind<B>(func: (val: A) => AbstractParser<S, U, B>): AbstractParser<S, U, B>;
-    and<B>(parser: AbstractParser<S, U, B>): AbstractParser<S, U, B>;
-    fail(msgStr: string): AbstractParser<S, U, never>;
-    done(): AbstractParser<S, U, TailRecDone<A>>;
-    cont(): AbstractParser<S, U, TailRecCont<A>>;
-    or<B>(parser: AbstractParser<S, U, B>): AbstractParser<S, U, A | B>;
-    label(labelStr: string): AbstractParser<S, U, A>;
-    hidden(): AbstractParser<S, U, A>;
-    try(): AbstractParser<S, U, A>;
-    lookAhead(): AbstractParser<S, U, A>;
-    reduceMany<B>(callback: (accum: B, val: A) => B, initVal: B): AbstractParser<S, U, B>;
-    many(): AbstractParser<S, U, A[]>;
-    skipMany(): AbstractParser<S, U, undefined>;
-    skipMany<B>(parser: AbstractParser<S, U, B>): AbstractParser<S, U, A>;
-    manyChars(): MethodManyChaRet<S, U, A>;
-    manyChars1(): MethodManyChaRet<S, U, A>;
-    option<B>(val: B): AbstractParser<S, U, A | B>;
-    optionMaybe(): AbstractParser<S, U, Maybe<A>>;
-    optional(): AbstractParser<S, U, undefined>;
+    map<B>(func: (val: A) => B): AbstractParser<B, S, U>;
+    return<B>(val: B): AbstractParser<B, S, U>;
+    ap(parser: MethodApArg<A, S, U>): MethodApRet<A, S, U>;
+    left<B>(parser: AbstractParser<B, S, U>): AbstractParser<A, S, U>;
+    skip<B>(parser: AbstractParser<B, S, U>): AbstractParser<A, S, U>;
+    right<B>(parser: AbstractParser<B, S, U>): AbstractParser<B, S, U>;
+    bind<B>(func: (val: A) => AbstractParser<B, S, U>): AbstractParser<B, S, U>;
+    and<B>(parser: AbstractParser<B, S, U>): AbstractParser<B, S, U>;
+    fail(msgStr: string): AbstractParser<never, S, U>;
+    done(): AbstractParser<TailRecDone<A>, S, U>;
+    cont(): AbstractParser<TailRecCont<A>, S, U>;
+    or<B>(parser: AbstractParser<B, S, U>): AbstractParser<A | B, S, U>;
+    label(labelStr: string): AbstractParser<A, S, U>;
+    hidden(): AbstractParser<A, S, U>;
+    try(): AbstractParser<A, S, U>;
+    lookAhead(): AbstractParser<A, S, U>;
+    reduceMany<B>(callback: (accum: B, val: A) => B, initVal: B): AbstractParser<B, S, U>;
+    many(): AbstractParser<A[], S, U>;
+    skipMany(): AbstractParser<undefined, S, U>;
+    skipMany<B>(parser: AbstractParser<B, S, U>): AbstractParser<A, S, U>;
+    manyChars(): MethodManyChaRet<A, S, U>;
+    manyChars1(): MethodManyChaRet<A, S, U>;
+    option<B>(val: B): AbstractParser<A | B, S, U>;
+    optionMaybe(): AbstractParser<Maybe<A>, S, U>;
+    optional(): AbstractParser<undefined, S, U>;
     between<B, C>(
-        open: AbstractParser<S, U, B>,
-        close: AbstractParser<S, U, C>
-    ): AbstractParser<S, U, A>;
-    many1(): AbstractParser<S, U, A[]>;
-    skipMany1(): AbstractParser<S, U, undefined>;
-    skipMany1<B>(parser: AbstractParser<S, U, B>): AbstractParser<S, U, A>;
-    sepBy<B>(sep: AbstractParser<S, U, B>): AbstractParser<S, U, A[]>;
-    sepBy1<B>(sep: AbstractParser<S, U, B>): AbstractParser<S, U, A[]>;
-    sepEndBy<B>(sep: AbstractParser<S, U, B>): AbstractParser<S, U, A[]>;
-    sepEndBy1<B>(sep: AbstractParser<S, U, B>): AbstractParser<S, U, A[]>;
-    endBy<B>(sep: AbstractParser<S, U, B>): AbstractParser<S, U, A[]>;
-    endBy1<B>(sep: AbstractParser<S, U, B>): AbstractParser<S, U, A[]>;
-    count(num: number): AbstractParser<S, U, A[]>;
-    notFollowedBy(): AbstractParser<S, U, undefined>;
-    notFollowedBy<B>(parser: AbstractParser<S, U, B>): AbstractParser<S, U, A>;
+        open: AbstractParser<B, S, U>,
+        close: AbstractParser<C, S, U>
+    ): AbstractParser<A, S, U>;
+    many1(): AbstractParser<A[], S, U>;
+    skipMany1(): AbstractParser<undefined, S, U>;
+    skipMany1<B>(parser: AbstractParser<B, S, U>): AbstractParser<A, S, U>;
+    sepBy<B>(sep: AbstractParser<B, S, U>): AbstractParser<A[], S, U>;
+    sepBy1<B>(sep: AbstractParser<B, S, U>): AbstractParser<A[], S, U>;
+    sepEndBy<B>(sep: AbstractParser<B, S, U>): AbstractParser<A[], S, U>;
+    sepEndBy1<B>(sep: AbstractParser<B, S, U>): AbstractParser<A[], S, U>;
+    endBy<B>(sep: AbstractParser<B, S, U>): AbstractParser<A[], S, U>;
+    endBy1<B>(sep: AbstractParser<B, S, U>): AbstractParser<A[], S, U>;
+    count(num: number): AbstractParser<A[], S, U>;
+    notFollowedBy(): AbstractParser<undefined, S, U>;
+    notFollowedBy<B>(parser: AbstractParser<B, S, U>): AbstractParser<A, S, U>;
     reduceManyTill<B, C>(
-        end: AbstractParser<S, U, B>,
+        end: AbstractParser<B, S, U>,
         callback: (accum: C, val: A) => C,
         initVal: C
-    ): AbstractParser<S, U, C>;
-    manyTill<B>(end: AbstractParser<S, U, B>): AbstractParser<S, U, A[]>;
-    skipManyTill<B>(end: AbstractParser<S, U, B>): AbstractParser<S, U, undefined>;
+    ): AbstractParser<C, S, U>;
+    manyTill<B>(end: AbstractParser<B, S, U>): AbstractParser<A[], S, U>;
+    skipManyTill<B>(end: AbstractParser<B, S, U>): AbstractParser<undefined, S, U>;
     skipManyTill<B, C>(
-        parser: AbstractParser<S, U, B>,
-        end: AbstractParser<S, U, C>
-    ): AbstractParser<S, U, A>;
-    forever(): AbstractParser<S, U, never>;
-    discard(): AbstractParser<S, U, undefined>;
-    void(): AbstractParser<S, U, undefined>;
-    join(): MethodJoinRet<S, U, A>;
-    when(cond: boolean): AbstractParser<S, U, A>;
-    unless(cond: boolean): AbstractParser<S, U, A>;
-    filter(test: (val: A) => boolean): AbstractParser<S, U, A>;
+        parser: AbstractParser<B, S, U>,
+        end: AbstractParser<C, S, U>
+    ): AbstractParser<A, S, U>;
+    forever(): AbstractParser<never, S, U>;
+    discard(): AbstractParser<undefined, S, U>;
+    void(): AbstractParser<undefined, S, U>;
+    join(): MethodJoinRet<A, S, U>;
+    when(cond: boolean): AbstractParser<A, S, U>;
+    unless(cond: boolean): AbstractParser<A, S, U>;
+    filter(test: (val: A) => boolean): AbstractParser<A, S, U>;
 }
 declare type AsFunction<T> = T extends (arg: infer A) => infer R
     ? (arg: A) => R
     : unknown;
-declare type MethodApArg<S, U, A> = AsFunction<A> extends (arg: infer B) => unknown
-    ? AbstractParser<S, U, B>
+declare type MethodApArg<A, S, U> = AsFunction<A> extends (arg: infer B) => unknown
+    ? AbstractParser<B, S, U>
     : never;
-declare type MethodApRet<S, U, A> = AsFunction<A> extends (arg: never) => infer B
-    ? AbstractParser<S, U, B>
+declare type MethodApRet<A, S, U> = AsFunction<A> extends (arg: never) => infer B
+    ? AbstractParser<B, S, U>
     : unknown;
-declare type MethodManyChaRet<S, U, A> = A extends string
-    ? AbstractParser<S, U, string>
+declare type MethodManyChaRet<A, S, U> = A extends string
+    ? AbstractParser<string, S, U>
     : unknown;
-declare type MethodJoinRet<S, U, A> = A extends AbstractParser<S, U, infer B>
-    ? AbstractParser<S, U, B>
+declare type MethodJoinRet<A, S, U> = A extends AbstractParser<infer B, S, U>
+    ? AbstractParser<B, S, U>
     : unknown;
-export declare class Parser<S, U, A> extends AbstractParser<S, U, A> {
-    constructor(func: (state: State<S, U>) => Result<S, U, A>);
+export declare class Parser<A, S = string, U = undefined> extends AbstractParser<A, S, U> {
+    constructor(func: (state: State<S, U>) => Result<A, S, U>);
 }
-export declare class LazyParser<S, U, A> extends AbstractParser<S, U, A> {
-    constructor(thunk: () => AbstractParser<S, U, A>);
-    eval(): Parser<S, U, A>;
+export declare class LazyParser<A, S = string, U = undefined> extends AbstractParser<A, S, U> {
+    constructor(thunk: () => AbstractParser<A, S, U>);
+    eval(): Parser<A, S, U>;
 }
-export declare function lazy<S, U, A>(thunk: () => AbstractParser<S, U, A>): LazyParser<S, U, A>;
-export declare function parse<S, U, A>(
-    parser: AbstractParser<S, U, A>,
+export declare function lazy<A, S = string, U = undefined>(
+    thunk: () => AbstractParser<A, S, U>
+): LazyParser<A, S, U>;
+export declare function parse<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
     name: string,
     input: S,
     userState: U,
@@ -243,86 +253,96 @@ export declare function isParser(val: unknown): boolean;
 export declare function assertParser(val: unknown): boolean;
 
 // prim
-export declare function map<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
+export declare function map<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
     func: (val: A) => B
-): AbstractParser<S, U, B>;
+): AbstractParser<B, S, U>;
 export declare function fmap<A, B>(
     func: (val: A) => B
-): <S, U>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, B>;
-export declare function pure<S, U, A>(val: A): AbstractParser<S, U, A>;
-export declare function ap<S, U, A, B>(
-    parserA: AbstractParser<S, U, (val: A) => B>,
-    parserB: AbstractParser<S, U, A>
-): AbstractParser<S, U, B>;
-export declare function left<S, U, A, B>(
-    parserA: AbstractParser<S, U, A>,
-    parserB: AbstractParser<S, U, B>
-): AbstractParser<S, U, A>;
-export declare function right<S, U, A, B>(
-    parserA: AbstractParser<S, U, A>,
-    parserB: AbstractParser<S, U, B>
-): AbstractParser<S, U, B>;
-export declare function bind<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    func: (val: A) => AbstractParser<S, U, B>
-): AbstractParser<S, U, B>;
-export declare function then<S, U, A, B>(
-    parserA: AbstractParser<S, U, A>,
-    parserB: AbstractParser<S, U, B>
-): AbstractParser<S, U, B>;
-export declare function fail<S, U>(msgStr: string): AbstractParser<S, U, never>;
+): <S = string, U = undefined>(parser: AbstractParser<A, S, U>) => AbstractParser<B, S, U>;
+export declare function pure<A, S = string, U = undefined>(val: A): AbstractParser<A, S, U>;
+export declare function ap<A, B, S = string, U = undefined>(
+    parserA: AbstractParser<(val: A) => B, S, U>,
+    parserB: AbstractParser<A, S, U>
+): AbstractParser<B, S, U>;
+export declare function left<A, B, S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>
+): AbstractParser<A, S, U>;
+export declare function right<A, B, S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>
+): AbstractParser<B, S, U>;
+export declare function bind<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    func: (val: A) => AbstractParser<B, S, U>
+): AbstractParser<B, S, U>;
+export declare function then<A, B, S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>
+): AbstractParser<B, S, U>;
+export declare function fail<S = string, U = undefined>(
+    msgStr: string
+): AbstractParser<never, S, U>;
 export declare type TailRec<A, B> = TailRecCont<A> | TailRecDone<B>;
 export declare type TailRecCont<A> = { done: false, value: A };
 export declare type TailRecDone<A> = { done: true, value: A };
-export declare function tailRecM<S, U, A, B>(
+export declare function tailRecM<A, B, S = string, U = undefined>(
     initVal: A,
-    func: (val: A) => AbstractParser<S, U, TailRec<A, B>>
-): AbstractParser<S, U, B>;
-export declare function ftailRecM<S, U, A, B>(
-    func: (val: A) => AbstractParser<S, U, TailRec<A, B>>
-): (initVal: A) => AbstractParser<S, U, B>;
+    func: (val: A) => AbstractParser<TailRec<A, B>, S, U>
+): AbstractParser<B, S, U>;
+export declare function ftailRecM<A, B, S = string, U = undefined>(
+    func: (val: A) => AbstractParser<TailRec<A, B>, S, U>
+): (initVal: A) => AbstractParser<B, S, U>;
 // TODO
-export declare function mzero<S, U>(): AbstractParser<S, U, never>;
-export declare function mplus<S, U, A, B>(
-    parserA: AbstractParser<S, U, A>,
-    parserB: AbstractParser<S, U, B>
-): AbstractParser<S, U, A | B>;
-export declare function label<S, U, A>(
-    parser: AbstractParser<S, U, A>,
+export declare function mzero<S = string, U = undefined>(): AbstractParser<never, S, U>;
+export declare function mplus<A, B, S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>
+): AbstractParser<A | B, S, U>;
+export declare function label<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
     labelStr: string
-): AbstractParser<S, U, A>;
-export declare function labels<S, U, A>(
-    parser: AbstractParser<S, U, A>,
+): AbstractParser<A, S, U>;
+export declare function labels<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
     labelStrs: string[]
-): AbstractParser<S, U, A>;
-export declare function hidden<S, U, A>(parser: AbstractParser<S, U, A>): AbstractParser<S, U, A>;
-export declare function unexpected<S, U>(msgStr: string): AbstractParser<S, U, never>;
-export declare function tryParse<S, U, A>(parser: AbstractParser<S, U, A>): AbstractParser<S, U, A>;
-export declare function lookAhead<S, U, A>(
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, A>;
-export declare function reduceMany<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
+): AbstractParser<A, S, U>;
+export declare function hidden<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A, S, U>;
+export declare function unexpected<S = string, U = undefined>(
+    msgStr: string
+): AbstractParser<never, S, U>;
+export declare function tryParse<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A, S, U>;
+export declare function lookAhead<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A, S, U>;
+export declare function reduceMany<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
     callback: (accum: B, val: A) => B,
     initVal: B
-): AbstractParser<S, U, B>;
-export declare function many<S, U, A>(parser: AbstractParser<S, U, A>): AbstractParser<S, U, A[]>;
-export declare function skipMany<S, U, A>(
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, undefined>;
-export declare function tokens<S extends Stream<unknown>, U>(
+): AbstractParser<B, S, U>;
+export declare function many<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A[], S, U>;
+export declare function skipMany<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<undefined, S, U>;
+export declare function tokens<S extends Stream<unknown> = string, U = undefined>(
     expectTokens: Token<S>[],
     tokenEqual: (tokenA: Token<S>, tokenB: Token<S>) => boolean,
     tokensToString: (tokens: Token<S>[]) => string,
     calcNextPos: (pos: SourcePos, tokens: Token<S>[], config: Config) => SourcePos
-): AbstractParser<S, U, Token<S>[]>;
-export declare function token<S extends Stream<unknown>, U, A>(
+): AbstractParser<Token<S>[], S, U>;
+export declare function token<A, S extends Stream<unknown> = string, U = undefined>(
     calcValue: (token: Token<S>, config: Config) => Maybe<A>,
     tokenToString: (token: Token<S>) => string,
     calcPos: (token: Token<S>, config: Config) => SourcePos
-): AbstractParser<S, U, A>;
-export declare function tokenPrim<S extends Stream<unknown>, U, A>(
+): AbstractParser<A, S, U>;
+export declare function tokenPrim<A, S extends Stream<unknown> = string, U = undefined>(
     calcValue: (token: Token<S>, config: Config) => Maybe<A>,
     tokenToString: (token: Token<S>) => string,
     calcNextPos: (pos: SourcePos, head: Token<S>, tail: Tail<S>, config: Config) => SourcePos,
@@ -333,287 +353,323 @@ export declare function tokenPrim<S extends Stream<unknown>, U, A>(
         tail: Tail<S>,
         config: Config
     ) => U
-): AbstractParser<S, U, A>;
+): AbstractParser<A, S, U>;
 // TODO
-export declare function getParserState<S, U>(): AbstractParser<S, U, State<S, U>>;
-export declare function setParserState<S, U>(state: State<S, U>): AbstractParser<S, U, State<S, U>>;
-export declare function updateParserState<S, U>(
+export declare function getParserState<S = string, U = undefined>(
+): AbstractParser<State<S, U>, S, U>;
+export declare function setParserState<S = string, U = undefined>(
+    state: State<S, U>
+): AbstractParser<State<S, U>, S, U>;
+export declare function updateParserState<S = string, U = undefined>(
     func: (state: State<S, U>) => State<S, U>
-): AbstractParser<S, U, State<S, U>>;
+): AbstractParser<State<S, U>, S, U>;
 // TODO
-export declare function getConfig<S, U>(): AbstractParser<S, U, Config>;
-export declare function setConfig<S, U>(config: Config): AbstractParser<S, U, undefined>;
+export declare function getConfig<S = string, U = undefined>(): AbstractParser<Config, S, U>;
+export declare function setConfig<S = string, U = undefined>(
+    config: Config
+): AbstractParser<undefined, S, U>;
 // TODO
-export declare function getInput<S, U>(): AbstractParser<S, U, S>;
-export declare function setInput<S, U>(input: S): AbstractParser<S, U, undefined>;
+export declare function getInput<S = string, U = undefined>(): AbstractParser<S, S, U>;
+export declare function setInput<S = string, U = undefined>(
+    input: S
+): AbstractParser<undefined, S, U>;
 // TODO
-export declare function getPosition<S, U>(): AbstractParser<S, U, SourcePos>;
-export declare function setPosition<S, U>(pos: SourcePos): AbstractParser<S, U, undefined>;
+export declare function getPosition<S = string, U = undefined>(): AbstractParser<SourcePos, S, U>;
+export declare function setPosition<S = string, U = undefined>(
+    pos: SourcePos
+): AbstractParser<undefined, S, U>;
 // TODO
-export declare function getState<S, U>(): AbstractParser<S, U, U>;
-export declare function setState<S, U>(userState: U): AbstractParser<S, U, undefined>;
+export declare function getState<S = string, U = undefined>(): AbstractParser<U, S, U>;
+export declare function setState<S = string, U = undefined>(
+    userState: U
+): AbstractParser<undefined, S, U>;
 
 // char
-export declare function string<S extends Stream<string>, U>(
+export declare function string<S extends Stream<string> = string, U = undefined>(
     str: string
-): AbstractParser<S, U, string>;
-export declare function satisfy<S extends Stream<string>, U>(
+): AbstractParser<string, S, U>;
+export declare function satisfy<S extends Stream<string> = string, U = undefined>(
     test: (char: string, config: Config) => boolean
-): AbstractParser<S, U, string>;
-export declare function oneOf<S extends Stream<string>, U>(
+): AbstractParser<string, S, U>;
+export declare function oneOf<S extends Stream<string> = string, U = undefined>(
     str: string
-): AbstractParser<S, U, string>;
-export declare function noneOf<S extends Stream<string>, U>(
+): AbstractParser<string, S, U>;
+export declare function noneOf<S extends Stream<string> = string, U = undefined>(
     str: string
-): AbstractParser<S, U, string>;
-export declare function char<S extends Stream<string>, U>(
+): AbstractParser<string, S, U>;
+export declare function char<S extends Stream<string> = string, U = undefined>(
     expectChar: string
-): AbstractParser<S, U, string>;
+): AbstractParser<string, S, U>;
 // TODO
-export declare function anyChar<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function anyChar<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function space<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function space<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function spaces<S extends Stream<string>, U>(): AbstractParser<S, U, undefined>;
+export declare function spaces<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<undefined, S, U>;
 // TODO
-export declare function newline<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function newline<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function tab<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function tab<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function upper<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function upper<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function lower<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function lower<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function letter<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function letter<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function digit<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function digit<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function alphaNum<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function alphaNum<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function octDigit<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
+export declare function octDigit<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
 // TODO
-export declare function hexDigit<S extends Stream<string>, U>(): AbstractParser<S, U, string>;
-export declare function manyChars<S, U>(
-    parser: AbstractParser<S, U, string>
-): AbstractParser<S, U, string>;
-export declare function manyChars1<S, U>(
-    parser: AbstractParser<S, U, string>
-): AbstractParser<S, U, string>;
-export declare function regexp<U>(re: RegExp, groupId?: number): AbstractParser<string, U, string>;
+export declare function hexDigit<S extends Stream<string> = string, U = undefined>(
+): AbstractParser<string, S, U>;
+export declare function manyChars<S = string, U = undefined>(
+    parser: AbstractParser<string, S, U>
+): AbstractParser<string, S, U>;
+export declare function manyChars1<S = string, U = undefined>(
+    parser: AbstractParser<string, S, U>
+): AbstractParser<string, S, U>;
+export declare function regexp<U = undefined>(
+    re: RegExp,
+    groupId?: number
+): AbstractParser<string, U, string>;
 
 // combinators
-export declare function choice<S, U, A>(parsers: AbstractParser<S, U, A>[]): AbstractParser<S, U, A>;
-export declare function option<S, U, A, B>(
+export declare function choice<A, S = string, U = undefined>(
+    parsers: AbstractParser<A, S, U>[]
+): AbstractParser<A, S, U>;
+export declare function option<A, B, S = string, U = undefined>(
     val: B,
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, A | B>;
-export declare function optionMaybe<S, U, A>(
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, Maybe<A>>;
-export declare function optional<S, U, A>(
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, undefined>;
-export declare function between<S, U, A, B, C>(
-    open: AbstractParser<S, U, A>,
-    close: AbstractParser<S, U, B>,
-    parser: AbstractParser<S, U, C>
-): AbstractParser<S, U, C>;
-export declare function many1<S, U, A>(parser: AbstractParser<S, U, A>): AbstractParser<S, U, A[]>;
-export declare function skipMany1<S, U, A>(
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, undefined>;
-export declare function sepBy<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    sep: AbstractParser<S, U, B>
-): AbstractParser<S, U, A[]>;
-export declare function sepBy1<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    sep: AbstractParser<S, U, B>
-): AbstractParser<S, U, A[]>;
-export declare function sepEndBy<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    sep: AbstractParser<S, U, B>
-): AbstractParser<S, U, A[]>;
-export declare function sepEndBy1<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    sep: AbstractParser<S, U, B>
-): AbstractParser<S, U, A[]>;
-export declare function endBy<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    sep: AbstractParser<S, U, B>
-): AbstractParser<S, U, A[]>;
-export declare function endBy1<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    sep: AbstractParser<S, U, B>
-): AbstractParser<S, U, A[]>;
-export declare function count<S, U, A>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A | B, S, U>;
+export declare function optionMaybe<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<Maybe<A>, S, U>;
+export declare function optional<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<undefined, S, U>;
+export declare function between<A, B, C, S = string, U = undefined>(
+    open: AbstractParser<A, S, U>,
+    close: AbstractParser<B, S, U>,
+    parser: AbstractParser<C, S, U>
+): AbstractParser<C, S, U>;
+export declare function many1<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A[], S, U>;
+export declare function skipMany1<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<undefined, S, U>;
+export declare function sepBy<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    sep: AbstractParser<B, S, U>
+): AbstractParser<A[], S, U>;
+export declare function sepBy1<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    sep: AbstractParser<B, S, U>
+): AbstractParser<A[], S, U>;
+export declare function sepEndBy<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    sep: AbstractParser<B, S, U>
+): AbstractParser<A[], S, U>;
+export declare function sepEndBy1<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    sep: AbstractParser<B, S, U>
+): AbstractParser<A[], S, U>;
+export declare function endBy<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    sep: AbstractParser<B, S, U>
+): AbstractParser<A[], S, U>;
+export declare function endBy1<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    sep: AbstractParser<B, S, U>
+): AbstractParser<A[], S, U>;
+export declare function count<A, S = string, U = undefined>(
     num: number,
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, A[]>;
-export declare function chainl<S, U, A>(
-    term: AbstractParser<S, U, A>,
-    op: AbstractParser<S, U, (accum: A, val: A) => A>,
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A[], S, U>;
+export declare function chainl<A, S = string, U = undefined>(
+    term: AbstractParser<A, S, U>,
+    op: AbstractParser<(accum: A, val: A) => A, S, U>,
     defaultVal: A
-): AbstractParser<S, U, A>;
-export declare function chainl1<S, U, A>(
-    term: AbstractParser<S, U, A>,
-    op: AbstractParser<S, U, (accum: A, val: A) => A>,
-): AbstractParser<S, U, A>;
-export declare function chainr<S, U, A>(
-    term: AbstractParser<S, U, A>,
-    op: AbstractParser<S, U, (val: A, accum: A) => A>,
+): AbstractParser<A, S, U>;
+export declare function chainl1<A, S = string, U = undefined>(
+    term: AbstractParser<A, S, U>,
+    op: AbstractParser<(accum: A, val: A) => A, S, U>,
+): AbstractParser<A, S, U>;
+export declare function chainr<A, S = string, U = undefined>(
+    term: AbstractParser<A, S, U>,
+    op: AbstractParser<(val: A, accum: A) => A, S, U>,
     defaultVal: A
-): AbstractParser<S, U, A>;
-export declare function chainr1<S, U, A>(
-    term: AbstractParser<S, U, A>,
-    op: AbstractParser<S, U, (val: A, accum: A) => A>,
-): AbstractParser<S, U, A>;
+): AbstractParser<A, S, U>;
+export declare function chainr1<A, S = string, U = undefined>(
+    term: AbstractParser<A, S, U>,
+    op: AbstractParser<(val: A, accum: A) => A, S, U>,
+): AbstractParser<A, S, U>;
 // TODO
-export declare function anyToken<S extends Stream<unknown>, U>(): AbstractParser<S, U, Token<S>>;
-export declare function notFollowedBy<S, U, A>(
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, undefined>;
+export declare function anyToken<S extends Stream<unknown> = string, U = undefined>(
+): AbstractParser<Token<S>, S, U>;
+export declare function notFollowedBy<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<undefined, S, U>;
 // TODO
-export declare function eof<S extends Stream<unknown>, U>(): AbstractParser<S, U, undefined>;
-export declare function reduceManyTill<S, U, A, B, C>(
-    parser: AbstractParser<S, U, A>,
-    end: AbstractParser<S, U, B>,
+export declare function eof<S extends Stream<unknown> = string, U = undefined>(
+): AbstractParser<undefined, S, U>;
+export declare function reduceManyTill<A, B, C, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    end: AbstractParser<B, S, U>,
     callback: (accum: C, val: A) => C,
     initVal: C
-): AbstractParser<S, U, C>
-export declare function manyTill<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    end: AbstractParser<S, U, B>
-): AbstractParser<S, U, A[]>;
-export declare function skipManyTill<S, U, A, B>(
-    parser: AbstractParser<S, U, A>,
-    end: AbstractParser<S, U, B>
-): AbstractParser<S, U, undefined>;
+): AbstractParser<C, S, U>
+export declare function manyTill<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    end: AbstractParser<B, S, U>
+): AbstractParser<A[], S, U>;
+export declare function skipManyTill<A, B, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>,
+    end: AbstractParser<B, S, U>
+): AbstractParser<undefined, S, U>;
 
 // monad
-export declare function forever<S, U, A>(
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, never>;
-export declare function discard<S, U, A>(
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, undefined>;
-export declare function join<S, U, A>(
-    parser: AbstractParser<S, U, AbstractParser<S, U, A>>
-): AbstractParser<S, U, A>;
-export declare function when<S, U>(
+export declare function forever<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<never, S, U>;
+export declare function discard<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<undefined, S, U>;
+export declare function join<A, S = string, U = undefined>(
+    parser: AbstractParser<AbstractParser<A, S, U>, S, U>
+): AbstractParser<A, S, U>;
+export declare function when<S = string, U = undefined>(
     cond: boolean,
-    parser: AbstractParser<S, U, undefined>
-): AbstractParser<S, U, undefined>;
-export declare function unless<S, U>(
+    parser: AbstractParser<undefined, S, U>
+): AbstractParser<undefined, S, U>;
+export declare function unless<S = string, U = undefined>(
     cond: boolean,
-    parser: AbstractParser<S, U, undefined>
-): AbstractParser<S, U, undefined>;
+    parser: AbstractParser<undefined, S, U>
+): AbstractParser<undefined, S, U>;
 export declare function liftM<A, B>(
     func: (val: A) => B
-): <S, U>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, B>;
+): <S = string, U = undefined>(parser: AbstractParser<A, S, U>) => AbstractParser<B, S, U>;
 export declare function liftM2<A, B, C>(
     func: (valA: A, valB: B) => C
-): <S, U>(
-    parserA: AbstractParser<S, U, A>,
-    parserB: AbstractParser<S, U, B>
-) => AbstractParser<S, U, C>;
+): <S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>
+) => AbstractParser<C, S, U>;
 export declare function liftM3<A, B, C, D>(
     func: (valA: A, valB: B, valC: C) => D
-): <S, U>(
-    parserA: AbstractParser<S, U, A>,
-    parserB: AbstractParser<S, U, B>,
-    parserC: AbstractParser<S, U, C>
-) => AbstractParser<S, U, D>;
+): <S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>,
+    parserC: AbstractParser<C, S, U>
+) => AbstractParser<D, S, U>;
 export declare function liftM4<A, B, C, D, E>(
     func: (valA: A, valB: B, valC: C, valD: D) => E
-): <S, U>(
-    parserA: AbstractParser<S, U, A>,
-    parserB: AbstractParser<S, U, B>,
-    parserC: AbstractParser<S, U, C>,
-    parserD: AbstractParser<S, U, D>
-) => AbstractParser<S, U, E>;
+): <S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>,
+    parserC: AbstractParser<C, S, U>,
+    parserD: AbstractParser<D, S, U>
+) => AbstractParser<E, S, U>;
 export declare function liftM5<A, B, C, D, E, F>(
     func: (valA: A, valB: B, valC: C, valD: D, valE: E) => F
-): <S, U>(
-    parserA: AbstractParser<S, U, A>,
-    parserB: AbstractParser<S, U, B>,
-    parserC: AbstractParser<S, U, C>,
-    parserD: AbstractParser<S, U, D>,
-    parserE: AbstractParser<S, U, E>
-) => AbstractParser<S, U, F>;
-export declare function ltor<S, U, A, B, C>(
-    funcA: (val: A) => AbstractParser<S, U, B>,
-    funcB: (val: B) => AbstractParser<S, U, C>
-): (val: A) => AbstractParser<S, U, C>;
-export declare function rtol<S, U, A, B, C>(
-    funcA: (val: B) => AbstractParser<S, U, C>,
-    funcB: (val: A) => AbstractParser<S, U, B>
-): (val: A) => AbstractParser<S, U, C>;
-export declare function sequence<S, U, A>(
-    parsers: AbstractParser<S, U, A>[]
-): AbstractParser<S, U, A[]>;
-export declare function sequence_<S, U, A>(
-    parsers: AbstractParser<S, U, A>[]
-): AbstractParser<S, U, undefined>;
-export declare function mapM<S, U, A, B>(
-    func: (val: A) => AbstractParser<S, U, B>,
+): <S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>,
+    parserC: AbstractParser<C, S, U>,
+    parserD: AbstractParser<D, S, U>,
+    parserE: AbstractParser<E, S, U>
+) => AbstractParser<F, S, U>;
+export declare function ltor<A, B, C, S = string, U = undefined>(
+    funcA: (val: A) => AbstractParser<B, S, U>,
+    funcB: (val: B) => AbstractParser<C, S, U>
+): (val: A) => AbstractParser<C, S, U>;
+export declare function rtol<A, B, C, S = string, U = undefined>(
+    funcA: (val: B) => AbstractParser<C, S, U>,
+    funcB: (val: A) => AbstractParser<B, S, U>
+): (val: A) => AbstractParser<C, S, U>;
+export declare function sequence<A, S = string, U = undefined>(
+    parsers: AbstractParser<A, S, U>[]
+): AbstractParser<A[], S, U>;
+export declare function sequence_<A, S = string, U = undefined>(
+    parsers: AbstractParser<A, S, U>[]
+): AbstractParser<undefined, S, U>;
+export declare function mapM<A, B, S = string, U = undefined>(
+    func: (val: A) => AbstractParser<B, S, U>,
     arr: A[]
-): AbstractParser<S, U, B[]>;
-export declare function mapM_<S, U, A, B>(
-    func: (val: A) => AbstractParser<S, U, B>,
+): AbstractParser<B[], S, U>;
+export declare function mapM_<A, B, S = string, U = undefined>(
+    func: (val: A) => AbstractParser<B, S, U>,
     arr: A[]
-): AbstractParser<S, U, undefined>;
-export declare function forM<S, U, A, B>(
+): AbstractParser<undefined, S, U>;
+export declare function forM<A, B, S = string, U = undefined>(
     arr: A[],
-    func: (val: A) => AbstractParser<S, U, B>
-): AbstractParser<S, U, B[]>;
-export declare function forM_<S, U, A, B>(
+    func: (val: A) => AbstractParser<B, S, U>
+): AbstractParser<B[], S, U>;
+export declare function forM_<A, B, S = string, U = undefined>(
     arr: A[],
-    func: (val: A) => AbstractParser<S, U, B>
-): AbstractParser<S, U, undefined>;
-export declare function filterM<S, U, A>(
-    test: (val: A) => AbstractParser<S, U, boolean>,
+    func: (val: A) => AbstractParser<B, S, U>
+): AbstractParser<undefined, S, U>;
+export declare function filterM<A, S = string, U = undefined>(
+    test: (val: A) => AbstractParser<boolean, S, U>,
     arr: A[]
-): AbstractParser<S, U, A>;
-export declare function zipWithM<S, U, A, B, C>(
-    func: (valA: A, valB: B) => AbstractParser<S, U, C>,
+): AbstractParser<A, S, U>;
+export declare function zipWithM<A, B, C, S = string, U = undefined>(
+    func: (valA: A, valB: B) => AbstractParser<C, S, U>,
     arrA: A[],
     arrB: B[]
-): AbstractParser<S, U, C[]>;
-export declare function zipWithM_<S, U, A, B, C>(
-    func: (valA: A, valB: B) => AbstractParser<S, U, C>,
+): AbstractParser<C[], S, U>;
+export declare function zipWithM_<A, B, C, S = string, U = undefined>(
+    func: (valA: A, valB: B) => AbstractParser<C, S, U>,
     arrA: A[],
     arrB: B[]
-): AbstractParser<S, U, undefined>;
-export declare function foldM<S, U, A, B>(
-    func: (accum: B, val: A) => AbstractParser<S, U, B>,
+): AbstractParser<undefined, S, U>;
+export declare function foldM<A, B, S = string, U = undefined>(
+    func: (accum: B, val: A) => AbstractParser<B, S, U>,
     initVal: B,
     arr: A[]
-): AbstractParser<S, U, B>;
-export declare function foldM_<S, U, A, B>(
-    func: (accum: B, val: A) => AbstractParser<S, U, B>,
+): AbstractParser<B, S, U>;
+export declare function foldM_<A, B, S = string, U = undefined>(
+    func: (accum: B, val: A) => AbstractParser<B, S, U>,
     initVal: B,
     arr: A[]
-): AbstractParser<S, U, undefined>;
-export declare function replicateM<S, U, A>(
+): AbstractParser<undefined, S, U>;
+export declare function replicateM<A, S = string, U = undefined>(
     num: number,
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, A[]>;
-export declare function replicateM_<S, U, A>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A[], S, U>;
+export declare function replicateM_<A, S = string, U = undefined>(
     num: number,
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, undefined>;
-export declare function guard<S, U>(cond: boolean): AbstractParser<S, U, undefined>;
-export declare function msum<S, U, A>(parsers: AbstractParser<S, U, A>[]): AbstractParser<S, U, A>;
-export declare function mfilter<S, U, A>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<undefined, S, U>;
+export declare function guard<S = string, U = undefined>(
+    cond: boolean
+): AbstractParser<undefined, S, U>;
+export declare function msum<A, S = string, U = undefined>(
+    parsers: AbstractParser<A, S, U>[]
+): AbstractParser<A, S, U>;
+export declare function mfilter<A, S = string, U = undefined>(
     test: (val: A) => boolean,
-    parser: AbstractParser<S, U, A>
-): AbstractParser<S, U, A>;
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A, S, U>;
 
 // qo
-export declare function qo<S, U>(
-    genFunc: () => IterableIterator<AbstractParser<S, U, any>>
-): AbstractParser<S, U, any>;
+export declare function qo<S = string, U = undefined>(
+    genFunc: () => IterableIterator<AbstractParser<any, S, U>>
+): AbstractParser<any, S, U>;
 
 // expr
 export declare type OperatorType = AssocValueOf<typeof OperatorType>;
@@ -631,68 +687,68 @@ export declare const OperatorAssoc: Readonly<{
 declare type OperatorFunc<T extends OperatorType, A> = T extends "infix"
     ? (valA: A, valB: A) => A
     : (val: A) => A;
-export declare class Operator<T extends OperatorType, S, U, A> {
-    constructor(type: T, parser: AbstractParser<S, U, OperatorFunc<T, A>>, assoc?: OperatorAssoc);
+export declare class Operator<T extends OperatorType, A, S = string, U = undefined> {
+    constructor(type: T, parser: AbstractParser<OperatorFunc<T, A>, S, U>, assoc?: OperatorAssoc);
     readonly type: OperatorType;
-    readonly parser: AbstractParser<S, U, OperatorFunc<T, A>>;
+    readonly parser: AbstractParser<OperatorFunc<T, A>, S, U>;
     readonly assoc: OperatorAssoc | undefined;
 }
-export declare function buildExpressionParser<S, U, A>(
-    opTable: Operator<OperatorType, S, U, A>[][],
-    atom: AbstractParser<S, U, A>
-): AbstractParser<S, U, A>
+export declare function buildExpressionParser<A, S = string, U = undefined>(
+    opTable: Operator<OperatorType, A, S, U>[][],
+    atom: AbstractParser<A, S, U>
+): AbstractParser<A, S, U>
 
 // token
-export declare type LanguageDefObj<S, U> = {
+export declare type LanguageDefObj<S = string, U = undefined> = {
     commentStart?  : string,
     commentEnd?    : string,
     commentLine?   : string,
     nestedComments?: boolean,
-    idStart?       : AbstractParser<S, U, string>,
-    idLetter?      : AbstractParser<S, U, string>,
-    opStart?       : AbstractParser<S, U, string>,
-    opLetter?      : AbstractParser<S, U, string>,
+    idStart?       : AbstractParser<string, S, U>,
+    idLetter?      : AbstractParser<string, S, U>,
+    opStart?       : AbstractParser<string, S, U>,
+    opLetter?      : AbstractParser<string, S, U>,
     reservedIds?   : string[],
     reservedOps?   : string[],
     caseSensitive? : boolean,
 };
-export declare class LanguageDef<S, U> {
+export declare class LanguageDef<S = string, U = undefined> {
     constructor(obj: LanguageDefObj<S, U>);
     clone(): LanguageDef<S, U>;
 }
 export declare type NaturalOrFloat =
       { type: "natural", value: number }
     | { type: "float", value: number };
-export declare type TokenParser<S, U> = {
-    whiteSpace    : AbstractParser<S, U, undefined>,
-    lexeme        : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A>,
-    symbol        : (name: string) => AbstractParser<S, U, string>,
-    parens        : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A>,
-    braces        : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A>,
-    angles        : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A>,
-    brackets      : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A>,
-    semi          : AbstractParser<S, U, string>,
-    comma         : AbstractParser<S, U, string>,
-    colon         : AbstractParser<S, U, string>,
-    dot           : AbstractParser<S, U, string>,
-    semiSep       : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A[]>,
-    semiSep1      : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A[]>,
-    commaSep      : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A[]>,
-    commaSep1     : <A>(parser: AbstractParser<S, U, A>) => AbstractParser<S, U, A[]>,
-    decimal       : AbstractParser<S, U, number>,
-    hexadecimal   : AbstractParser<S, U, number>,
-    octal         : AbstractParser<S, U, number>,
-    natural       : AbstractParser<S, U, number>,
-    integer       : AbstractParser<S, U, number>,
-    float         : AbstractParser<S, U, number>,
-    naturalOrFloat: AbstractParser<S, U, NaturalOrFloat>,
-    charLiteral   : AbstractParser<S, U, string>,
-    stringLiteral : AbstractParser<S, U, string>,
-    identifier    : AbstractParser<S, U, string>,
-    reserved      : (name: string) => AbstractParser<S, U, undefined>,
-    operator      : AbstractParser<S, U, string>,
-    reservedOp    : (name: string) => AbstractParser<S, U, undefined>,
+export declare type TokenParser<S = string, U = undefined> = {
+    whiteSpace    : AbstractParser<undefined, S, U>,
+    lexeme        : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A, S, U>,
+    symbol        : (name: string) => AbstractParser<string, S, U>,
+    parens        : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A, S, U>,
+    braces        : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A, S, U>,
+    angles        : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A, S, U>,
+    brackets      : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A, S, U>,
+    semi          : AbstractParser<string, S, U>,
+    comma         : AbstractParser<string, S, U>,
+    colon         : AbstractParser<string, S, U>,
+    dot           : AbstractParser<string, S, U>,
+    semiSep       : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A[], S, U>,
+    semiSep1      : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A[], S, U>,
+    commaSep      : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A[], S, U>,
+    commaSep1     : <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A[], S, U>,
+    decimal       : AbstractParser<number, S, U>,
+    hexadecimal   : AbstractParser<number, S, U>,
+    octal         : AbstractParser<number, S, U>,
+    natural       : AbstractParser<number, S, U>,
+    integer       : AbstractParser<number, S, U>,
+    float         : AbstractParser<number, S, U>,
+    naturalOrFloat: AbstractParser<NaturalOrFloat, S, U>,
+    charLiteral   : AbstractParser<string, S, U>,
+    stringLiteral : AbstractParser<string, S, U>,
+    identifier    : AbstractParser<string, S, U>,
+    reserved      : (name: string) => AbstractParser<undefined, S, U>,
+    operator      : AbstractParser<string, S, U>,
+    reservedOp    : (name: string) => AbstractParser<undefined, S, U>,
 };
-export declare function makeTokenParser<S extends Stream<string>, U>(
+export declare function makeTokenParser<S extends Stream<string> = string, U = undefined>(
     def: LanguageDef<S, U>
 ): TokenParser<S, U>;
