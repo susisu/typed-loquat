@@ -69,7 +69,7 @@ export declare interface IStream<T> {
     uncons(): Unconsed<T, IStream<T>>;
 }
 export declare type Stream<T> = string extends T
-    ? string | string[] | IStream<string>
+    ? string | T[] | IStream<T>
     : T[] | IStream<T>;
 export declare type Token<S extends Stream<unknown>> =
       S extends string           ? string
