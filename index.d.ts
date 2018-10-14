@@ -156,10 +156,10 @@ export declare type ParseResult<A> =
     | { success: false, err: AbstractParseError };
 export declare abstract class AbstractParser<A, S, U> {
     run(state: State<S, U>): Result<A, S, U>;
-    parse(name: string, input: S, userState: U, opts: ConfigOptions): ParseResult<A>;
+    parse: MethodParse<A, S, U>;
     map<B>(func: (val: A) => B): AbstractParser<B, S, U>;
     return<B>(val: B): AbstractParser<B, S, U>;
-    ap(parser: MethodApArg<A, S, U>): MethodApRet<A, S, U>;
+    ap: MethodAp<A, S, U>;
     left<B>(parser: AbstractParser<B, S, U>): AbstractParser<A, S, U>;
     skip<B>(parser: AbstractParser<B, S, U>): AbstractParser<A, S, U>;
     right<B>(parser: AbstractParser<B, S, U>): AbstractParser<B, S, U>;
@@ -177,8 +177,8 @@ export declare abstract class AbstractParser<A, S, U> {
     many(): AbstractParser<A[], S, U>;
     skipMany(): AbstractParser<undefined, S, U>;
     skipMany<B>(parser: AbstractParser<B, S, U>): AbstractParser<A, S, U>;
-    manyChars(): MethodManyChaRet<A, S, U>;
-    manyChars1(): MethodManyChaRet<A, S, U>;
+    manyChars: MethodManyChar<A, S, U>;
+    manyChars1: MethodManyChar<A, S, U>;
     option<B>(val: B): AbstractParser<A | B, S, U>;
     optionMaybe(): AbstractParser<Maybe<A>, S, U>;
     optional(): AbstractParser<undefined, S, U>;
@@ -212,25 +212,22 @@ export declare abstract class AbstractParser<A, S, U> {
     forever(): AbstractParser<never, S, U>;
     discard(): AbstractParser<undefined, S, U>;
     void(): AbstractParser<undefined, S, U>;
-    join(): MethodJoinRet<A, S, U>;
+    join: MethodJoin<A, S, U>;
     when(cond: boolean): AbstractParser<A, S, U>;
     unless(cond: boolean): AbstractParser<A, S, U>;
     filter(test: (val: A) => boolean): AbstractParser<A, S, U>;
 }
-declare type AsFunction<T> = T extends (arg: infer A) => infer R
-    ? (arg: A) => R
+declare type MethodParse<A, S, U> = U extends undefined
+    ? (name: string, input: S, userState?: U, opts?: ConfigOptions) => ParseResult<A>
+    : (name: string, input: S, userState: U, opts?: ConfigOptions) => ParseResult<A>;
+declare type MethodAp<A, S, U> = A extends (val: infer B) => infer C
+    ? (parser: AbstractParser<B, S, U>) => AbstractParser<C, S, U>
     : unknown;
-declare type MethodApArg<A, S, U> = AsFunction<A> extends (arg: infer B) => unknown
-    ? AbstractParser<B, S, U>
-    : never;
-declare type MethodApRet<A, S, U> = AsFunction<A> extends (arg: never) => infer B
-    ? AbstractParser<B, S, U>
+declare type MethodManyChar<A, S, U> = A extends string
+    ? () => AbstractParser<string, S, U>
     : unknown;
-declare type MethodManyChaRet<A, S, U> = A extends string
-    ? AbstractParser<string, S, U>
-    : unknown;
-declare type MethodJoinRet<A, S, U> = A extends AbstractParser<infer B, S, U>
-    ? AbstractParser<B, S, U>
+declare type MethodJoin<A, S, U> = A extends AbstractParser<infer B, S, U>
+    ? () => AbstractParser<B, S, U>
     : unknown;
 export declare class Parser<A, S = string, U = undefined> extends AbstractParser<A, S, U> {
     constructor(func: (state: State<S, U>) => Result<A, S, U>);
@@ -247,7 +244,14 @@ export declare function parse<A, S = string, U = undefined>(
     name: string,
     input: S,
     userState: U,
-    opts: ConfigOptions
+    opts?: ConfigOptions
+): ParseResult<A>;
+export declare function parse<A, S = string>(
+    parser: AbstractParser<A, S, undefined>,
+    name: string,
+    input: S,
+    userState?: undefined,
+    opts?: ConfigOptions
 ): ParseResult<A>;
 export declare function isParser(val: unknown): boolean;
 export declare function assertParser(val: unknown): undefined;
