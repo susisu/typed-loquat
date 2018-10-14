@@ -1,16 +1,16 @@
 export declare type Maybe<A> = { empty: true } | { empty: false, value: A };
 declare type AssocValueOf<T> = T[keyof T];
 
-// core
+// # core
 export declare type Unconsed<T, S> = EmptyUnconsed | NonEmptyUnconsed<T, S>;
 declare type EmptyUnconsed = { empty: true };
 declare type NonEmptyUnconsed<T, S> = { empty: false, head: T, tail: S };
 
-// core.utils
+// ## core.utils
 export declare function show<T>(value: T): string;
 export declare function unconsString(str: string, unicode: boolean): Unconsed<string, string>;
 
-// core.pos
+// ## core.pos
 export declare class SourcePos {
     constructor(name: string, line: number, column: number);
     static init(name: string): SourcePos;
@@ -27,7 +27,7 @@ export declare class SourcePos {
     addString(str: string, tabWidth: number, unicode: boolean): SourcePos;
 }
 
-// core.error
+// ## core.error
 export declare type ErrorMessageType = AssocValueOf<typeof ErrorMessageType>;
 export declare const ErrorMessageType: Readonly<{
     SYSTEM_UNEXPECT: "systemUnexpect",
@@ -64,7 +64,7 @@ export declare class LazyParseError extends AbstractParseError {
     eval(): ParseError;
 }
 
-// core.stream
+// ## core.stream
 export declare interface IStream<T> {
     uncons(): Unconsed<T, IStream<T>>;
 }
@@ -93,7 +93,7 @@ export declare class ArrayStream<T> implements IStream<T> {
     uncons(): Unconsed<T, ArrayStream<T>>;
 }
 
-// core.parser
+// ## core.parser
 export declare type ConfigOptions = { tabWidth: number, unicode: boolean };
 export declare class Config {
     constructor(opts: ConfigOptions);
@@ -250,9 +250,9 @@ export declare function parse<A, S = string, U = undefined>(
     opts: ConfigOptions
 ): ParseResult<A>;
 export declare function isParser(val: unknown): boolean;
-export declare function assertParser(val: unknown): boolean;
+export declare function assertParser(val: unknown): undefined;
 
-// prim
+// # prim
 export declare function map<A, B, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>,
     func: (val: A) => B
@@ -261,6 +261,7 @@ export declare function fmap<A, B>(
     func: (val: A) => B
 ): <S = string, U = undefined>(parser: AbstractParser<A, S, U>) => AbstractParser<B, S, U>;
 export declare function pure<A, S = string, U = undefined>(val: A): AbstractParser<A, S, U>;
+export declare function _return<A, S = string, U = undefined>(val: A): AbstractParser<A, S, U>;
 export declare function ap<A, B, S = string, U = undefined>(
     parserA: AbstractParser<(val: A) => B, S, U>,
     parserB: AbstractParser<A, S, U>
@@ -281,6 +282,10 @@ export declare function then<A, B, S = string, U = undefined>(
     parserA: AbstractParser<A, S, U>,
     parserB: AbstractParser<B, S, U>
 ): AbstractParser<B, S, U>;
+export declare function and<A, B, S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>
+): AbstractParser<B, S, U>;
 export declare function fail<S = string, U = undefined>(
     msgStr: string
 ): AbstractParser<never, S, U>;
@@ -294,9 +299,13 @@ export declare function tailRecM<A, B, S = string, U = undefined>(
 export declare function ftailRecM<A, B, S = string, U = undefined>(
     func: (val: A) => AbstractParser<TailRec<A, B>, S, U>
 ): (initVal: A) => AbstractParser<B, S, U>;
-// TODO
+export declare const unsafeMzero: AbstractParser<never, any, any>;
 export declare function mzero<S = string, U = undefined>(): AbstractParser<never, S, U>;
 export declare function mplus<A, B, S = string, U = undefined>(
+    parserA: AbstractParser<A, S, U>,
+    parserB: AbstractParser<B, S, U>
+): AbstractParser<A | B, S, U>;
+export declare function or<A, B, S = string, U = undefined>(
     parserA: AbstractParser<A, S, U>,
     parserB: AbstractParser<B, S, U>
 ): AbstractParser<A | B, S, U>;
@@ -315,6 +324,9 @@ export declare function unexpected<S = string, U = undefined>(
     msgStr: string
 ): AbstractParser<never, S, U>;
 export declare function tryParse<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<A, S, U>;
+export declare function _try<A, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>
 ): AbstractParser<A, S, U>;
 export declare function lookAhead<A, S = string, U = undefined>(
@@ -354,7 +366,7 @@ export declare function tokenPrim<A, S extends Stream<unknown> = string, U = und
         config: Config
     ) => U
 ): AbstractParser<A, S, U>;
-// TODO
+export declare const unsafeGetParserState: AbstractParser<State<any, any>, any, any>;
 export declare function getParserState<S = string, U = undefined>(
 ): AbstractParser<State<S, U>, S, U>;
 export declare function setParserState<S = string, U = undefined>(
@@ -363,28 +375,28 @@ export declare function setParserState<S = string, U = undefined>(
 export declare function updateParserState<S = string, U = undefined>(
     func: (state: State<S, U>) => State<S, U>
 ): AbstractParser<State<S, U>, S, U>;
-// TODO
+export declare const unsafeGetConfig: AbstractParser<Config, any, any>;
 export declare function getConfig<S = string, U = undefined>(): AbstractParser<Config, S, U>;
 export declare function setConfig<S = string, U = undefined>(
     config: Config
 ): AbstractParser<undefined, S, U>;
-// TODO
+export declare const unsafeGetInput: AbstractParser<any, any, any>;
 export declare function getInput<S = string, U = undefined>(): AbstractParser<S, S, U>;
 export declare function setInput<S = string, U = undefined>(
     input: S
 ): AbstractParser<undefined, S, U>;
-// TODO
+export declare const unsafeGetPosition: AbstractParser<SourcePos, any, any>;
 export declare function getPosition<S = string, U = undefined>(): AbstractParser<SourcePos, S, U>;
 export declare function setPosition<S = string, U = undefined>(
     pos: SourcePos
 ): AbstractParser<undefined, S, U>;
-// TODO
+export declare const unsafeGetState: AbstractParser<any, any, any>;
 export declare function getState<S = string, U = undefined>(): AbstractParser<U, S, U>;
 export declare function setState<S = string, U = undefined>(
     userState: U
 ): AbstractParser<undefined, S, U>;
 
-// char
+// # char
 export declare function string<S extends Stream<string> = string, U = undefined>(
     str: string
 ): AbstractParser<string, S, U>;
@@ -400,40 +412,40 @@ export declare function noneOf<S extends Stream<string> = string, U = undefined>
 export declare function char<S extends Stream<string> = string, U = undefined>(
     expectChar: string
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeAnyChar: AbstractParser<string, any, any>;
 export declare function anyChar<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeSpace: AbstractParser<string, any, any>;
 export declare function space<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeSpaces: AbstractParser<undefined, any, any>;
 export declare function spaces<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<undefined, S, U>;
-// TODO
+export declare const unsafeNewline: AbstractParser<string, any, any>;
 export declare function newline<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeTab: AbstractParser<string, any, any>;
 export declare function tab<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeUpper: AbstractParser<string, any, any>;
 export declare function upper<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeLower: AbstractParser<string, any, any>;
 export declare function lower<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeLetter: AbstractParser<string, any, any>;
 export declare function letter<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeDigit: AbstractParser<string, any, any>;
 export declare function digit<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeAlphaNum: AbstractParser<string, any, any>;
 export declare function alphaNum<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeOctDigit: AbstractParser<string, any, any>;
 export declare function octDigit<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
-// TODO
+export declare const unsafeHexDigit: AbstractParser<string, any, any>;
 export declare function hexDigit<S extends Stream<string> = string, U = undefined>(
 ): AbstractParser<string, S, U>;
 export declare function manyChars<S = string, U = undefined>(
@@ -447,7 +459,7 @@ export declare function regexp<U = undefined>(
     groupId?: number
 ): AbstractParser<string, U, string>;
 
-// combinators
+// # combinators
 export declare function choice<A, S = string, U = undefined>(
     parsers: AbstractParser<A, S, U>[]
 ): AbstractParser<A, S, U>;
@@ -518,13 +530,13 @@ export declare function chainr1<A, S = string, U = undefined>(
     term: AbstractParser<A, S, U>,
     op: AbstractParser<(val: A, accum: A) => A, S, U>,
 ): AbstractParser<A, S, U>;
-// TODO
+export declare const unsafeAnyToken: AbstractParser<any, any, any>;
 export declare function anyToken<S extends Stream<unknown> = string, U = undefined>(
 ): AbstractParser<Token<S>, S, U>;
 export declare function notFollowedBy<A, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>
 ): AbstractParser<undefined, S, U>;
-// TODO
+export declare const unsafeEof: AbstractParser<undefined, any, any>;
 export declare function eof<S extends Stream<unknown> = string, U = undefined>(
 ): AbstractParser<undefined, S, U>;
 export declare function reduceManyTill<A, B, C, S = string, U = undefined>(
@@ -532,7 +544,7 @@ export declare function reduceManyTill<A, B, C, S = string, U = undefined>(
     end: AbstractParser<B, S, U>,
     callback: (accum: C, val: A) => C,
     initVal: C
-): AbstractParser<C, S, U>
+): AbstractParser<C, S, U>;
 export declare function manyTill<A, B, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>,
     end: AbstractParser<B, S, U>
@@ -542,11 +554,14 @@ export declare function skipManyTill<A, B, S = string, U = undefined>(
     end: AbstractParser<B, S, U>
 ): AbstractParser<undefined, S, U>;
 
-// monad
+// # monad
 export declare function forever<A, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>
 ): AbstractParser<never, S, U>;
 export declare function discard<A, S = string, U = undefined>(
+    parser: AbstractParser<A, S, U>
+): AbstractParser<undefined, S, U>;
+export declare function _void<A, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>
 ): AbstractParser<undefined, S, U>;
 export declare function join<A, S = string, U = undefined>(
@@ -666,12 +681,15 @@ export declare function mfilter<A, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>
 ): AbstractParser<A, S, U>;
 
-// qo
+// # qo
 export declare function qo<S = string, U = undefined>(
     genFunc: () => IterableIterator<AbstractParser<any, S, U>>
 ): AbstractParser<any, S, U>;
+export declare function _do<S = string, U = undefined>(
+    genFunc: () => IterableIterator<AbstractParser<any, S, U>>
+): AbstractParser<any, S, U>;
 
-// expr
+// # expr
 export declare type OperatorType = AssocValueOf<typeof OperatorType>;
 export declare const OperatorType: Readonly<{
     INFIX  : "infix",
