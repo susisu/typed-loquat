@@ -115,7 +115,7 @@ export declare class State<S = string, U = undefined> {
     readonly userState: U;
     setConfig(config: Config): State<S, U>;
     setInput<S2>(input: S2): State<S2, U>;
-    setPosition(pos: SourcePos): State<S, U>
+    setPosition(pos: SourcePos): State<S, U>;
     setUserState<U2>(userState: U2): State<S, U2>;
 }
 export declare class Result<A, S = string, U = undefined> {
@@ -718,9 +718,9 @@ export declare class Operator<T extends OperatorType, A, S = string, U = undefin
 export declare function buildExpressionParser<A, S = string, U = undefined>(
     opTable: Operator<OperatorType, A, S, U>[][],
     atom: AbstractParser<A, S, U>
-): AbstractParser<A, S, U>
+): AbstractParser<A, S, U>;
 
-// token
+// # token
 export declare type LanguageDefObj<S = string, U = undefined> = {
     commentStart?  : string,
     commentEnd?    : string,

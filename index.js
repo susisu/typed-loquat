@@ -30,7 +30,6 @@ module.exports = Object.freeze({
     parse         : lq.parse,
     isParser      : lq.isParser,
     assertParser  : lq.assertParser,
-    // extendParser  : lq.extendParser,
 
     // # prim
     map                 : lq.map,
