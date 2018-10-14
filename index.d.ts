@@ -154,7 +154,7 @@ export declare class Result<A, S = string, U = undefined> {
 export declare type ParseResult<A> =
       { success: true, value: A }
     | { success: false, err: AbstractParseError };
-export declare abstract class AbstractParser<A, S, U> {
+export declare abstract class AbstractParser<A, S = string, U = undefined> {
     run(state: State<S, U>): Result<A, S, U>;
     parse: MethodParse<A, S, U>;
     map<B>(func: (val: A) => B): AbstractParser<B, S, U>;
