@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
     "lib": ["es2018"],
+    "noEmit": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
     "strictNullChecks": true
-  }
+  },
+  "files": [
+    "index.d.ts"
+  ]
 }
