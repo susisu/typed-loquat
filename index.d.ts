@@ -466,7 +466,7 @@ export declare function manyChars1<S = string, U = undefined>(
 export declare function regexp<U = undefined>(
     re: RegExp,
     groupId?: number
-): AbstractParser<string, U, string>;
+): AbstractParser<string, string, U>;
 
 // # combinators
 export declare function choice<A, S = string, U = undefined>(
