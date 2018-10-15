@@ -118,38 +118,49 @@ export declare class State<S = string, U = undefined> {
     setPosition(pos: SourcePos): State<S, U>;
     setUserState<U2>(userState: U2): State<S, U2>;
 }
-export declare class Result<A, S = string, U = undefined> {
-    constructor(
-        consumed: boolean,
-        success: boolean,
-        err: AbstractParseError,
-        val?: A | undefined,
-        state?: State<S, U> | undefined
-    );
-    static equal<A, S = string, U = undefined>(
+export declare type Result<A, S = string, U = undefined> = Failure | Success<A, S, U>;
+export declare const Result: Readonly<{
+    equal<A, S = string, U = undefined>(
         resA: Result<A, S, U>,
         resB: Result<A, S, U>,
         valEqual: (valA: A, valB: A) => boolean,
         inputEqual: (inputA: S, inputB: S) => boolean,
         userStateEqual: (userStateA: U, userStateB: U) => boolean
     ): boolean;
-    static csuc<A, S = string, U = undefined>(
+    csuc<A, S = string, U = undefined>(
         err: AbstractParseError,
         val: A,
         state: State<S, U>
-    ): Result<A, S, U>;
-    static cerr<A, S = string, U = undefined>(err: AbstractParseError): Result<A, S, U>;
-    static esuc<A, S = string, U = undefined>(
+    ): Success<A, S, U>;
+    cerr(err: AbstractParseError): Failure;
+    esuc<A, S = string, U = undefined>(
         err: AbstractParseError,
         val: A,
         state: State<S, U>
-    ): Result<A, S, U>;
-    static eerr<A, S = string, U = undefined>(err: AbstractParseError): Result<A, S, U>;
-    readonly consumed: boolean;
-    readonly success: boolean;
-    readonly err: AbstractParseError;
-    readonly val: A | undefined;
-    readonly state: State<S, U> | undefined;
+    ): Success<A, S, U>;
+    eerr(err: AbstractParseError): Failure;
+}>
+export declare class Failure {
+    constructor(
+       consumed: boolean,
+       err: AbstractParseError
+   );
+   readonly consumed: boolean;
+   readonly success: false;
+   readonly err: AbstractParseError;
+}
+export declare class Success<A, S = string, U = undefined> {
+    constructor(
+       consumed: boolean,
+       err: AbstractParseError,
+       val: A,
+       state: State<S, U>
+   );
+   readonly consumed: boolean;
+   readonly success: true;
+   readonly err: AbstractParseError;
+   readonly val: A;
+   readonly state: State<S, U>;
 }
 export declare type ParseResult<A> =
       { success: true, value: A }
