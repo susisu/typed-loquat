@@ -76,16 +76,10 @@ export declare type Token<S extends Stream<unknown>> =
     : S extends (infer T)[]      ? T
     : S extends IStream<infer T> ? T
     : never;
-export declare type Tail<S extends Stream<unknown>> =
-      S extends string           ? string
-    : S extends (infer T)[]      ? T[]
-    : S extends IStream<unknown> ? UnconsedTail<ReturnType<S["uncons"]>>
-    : never;
-declare type UnconsedTail<U> = U extends Unconsed<unknown, infer S> ? S : never;
 export declare function uncons<S extends Stream<unknown>>(
     input: S,
     unicode: boolean
-): Unconsed<Token<S>, Tail<S>>;
+): Unconsed<Token<S>, S>;
 export declare class ArrayStream<T> implements IStream<T> {
     constructor(arr: T[], index: number);
     readonly arr: T[];
@@ -372,12 +366,12 @@ export declare function token<A, S extends Stream<unknown> = string, U = undefin
 export declare function tokenPrim<A, S extends Stream<unknown> = string, U = undefined>(
     calcValue: (token: Token<S>, config: Config) => Maybe<A>,
     tokenToString: (token: Token<S>) => string,
-    calcNextPos: (pos: SourcePos, head: Token<S>, tail: Tail<S>, config: Config) => SourcePos,
+    calcNextPos: (pos: SourcePos, head: Token<S>, tail: S, config: Config) => SourcePos,
     calcNextUserState?: (
         userState: U,
         pos: SourcePos,
         head: Token<S>,
-        tail: Tail<S>,
+        tail: S,
         config: Config
     ) => U
 ): AbstractParser<A, S, U>;
