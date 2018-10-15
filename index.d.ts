@@ -163,8 +163,8 @@ export declare class Success<A, S = string, U = undefined> {
    readonly state: State<S, U>;
 }
 export declare type ParseResult<A> =
-      { success: true, value: A }
-    | { success: false, err: AbstractParseError };
+      { success: false, err: AbstractParseError }
+    | { success: true, value: A };
 export declare abstract class AbstractParser<A, S = string, U = undefined> {
     run(state: State<S, U>): Result<A, S, U>;
     parse: MethodParse<A, S, U>;
