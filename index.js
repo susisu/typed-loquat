@@ -15,6 +15,24 @@ class Failure extends lq.Result {
   }
 }
 
+class InfixOperator extends lq.Operator {
+  constructor(parser, assoc) {
+    super("infix", parser, assoc);
+  }
+}
+
+class PrefixOperator extends lq.Operator {
+  constructor(parser) {
+    super("prefix", parser);
+  }
+}
+
+class PostfixOperator extends lq.Operator {
+  constructor(parser) {
+    super("postfix", parser);
+  }
+}
+
 module.exports = Object.freeze({
     // # core
     // ## core.utils
@@ -193,7 +211,9 @@ module.exports = Object.freeze({
     // # expr
     OperatorType         : lq.OperatorType,
     OperatorAssoc        : lq.OperatorAssoc,
-    Operator             : lq.Operator,
+    InfixOperator        : InfixOperator,
+    PrefixOperator       : PrefixOperator,
+    PostfixOperator      : PostfixOperator,
     buildExpressionParser: lq.buildExpressionParser,
 
     // # token
