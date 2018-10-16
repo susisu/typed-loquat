@@ -32,7 +32,7 @@ class Abs {
 // P<T> is the type of a parser that yields T as its result
 type P<T> = lq.AbstractParser<T>;
 
-// language definition
+// generate a token parser from the language definition
 const languageDef = new lq.LanguageDef({
     commentStart  : "(*",
     commentEnd    : "*)",
