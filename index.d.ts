@@ -691,12 +691,12 @@ export declare function mfilter<A, S = string, U = undefined>(
 ): AbstractParser<A, S, U>;
 
 // # qo
-export declare function qo<S = string, U = undefined>(
-    genFunc: () => IterableIterator<AbstractParser<any, S, U>>
-): AbstractParser<any, S, U>;
-export declare function _do<S = string, U = undefined>(
-    genFunc: () => IterableIterator<AbstractParser<any, S, U>>
-): AbstractParser<any, S, U>;
+export declare function qo<T, S = string, U = undefined>(
+    genFunc: () => IterableIterator<any>
+): AbstractParser<T, S, U>;
+export declare function _do<T, S = string, U = undefined>(
+    genFunc: () => IterableIterator<any>
+): AbstractParser<T, S, U>;
 
 // # expr
 export declare type OperatorType = AssocValueOf<typeof OperatorType>;
