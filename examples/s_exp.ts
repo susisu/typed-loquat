@@ -1,12 +1,13 @@
 import * as lq from '../index';
 
-// P<T> is the type of a parser that yields T as its result
-type P<T> = lq.AbstractParser<T>;
-
 type Atom = string | null;
 type Cons = { car: SExp, cdr: SExp };
 type SExp = Atom | Cons;
 
+// P<T> is the type of a parser that yields T as its result
+type P<T> = lq.AbstractParser<T>;
+
+// parser that skips whitespace characters
 const spaces = lq.spaces().label("");
 
 // skip trailing whitespace
@@ -39,7 +40,7 @@ const list = lq._do<SExp>(function* () {
 
 const parser: P<SExp> = spaces.and(expr).skip(lq.eof());
 
-export function parseSExpr(src: string) {
+export function parseSExpr(src: string): SExp {
     const res = parser.parse("", src);
     if (res.success) {
         return res.value;

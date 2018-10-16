@@ -3,6 +3,7 @@ import * as lq from "../index";
 // P<T> is the type of a parser that yields T as its result
 type P<T> = lq.AbstractParser<T>;
 
+// parser that skips whitespace characters
 const spaces = lq.spaces().label("");
 
 // skip trailing whitespace
@@ -102,7 +103,7 @@ const json: P<{} | null> = spaces
     .and(value)
     .skip(lq.eof());
 
-export function parseJson(src: string) {
+export function parseJson(src: string): {} | null {
     const res = json.parse("", src);
     if (res.success) {
         return res.value;

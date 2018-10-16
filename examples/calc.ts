@@ -3,6 +3,7 @@ import * as lq from '../index';
 // P<T> is the type of a parser that yields T as its result
 type P<T> = lq.AbstractParser<T>;
 
+// parser that skips whitespace characters
 const spaces = lq.spaces().label("");
 
 // skips trailing spaces
@@ -57,7 +58,7 @@ const expr = lq.buildExpressionParser(
 
 const calc: P<number> = spaces.and(expr).left(lq.eof());
 
-export function calcExpr(src: string) {
+export function calcExpr(src: string): number {
     const res = calc.parse("", src);
     if (res.success) {
         return res.value;
