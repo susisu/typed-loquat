@@ -9,7 +9,8 @@
     "strictPropertyInitialization": true,
     "strictNullChecks": true
   },
-  "files": [
-    "index.d.ts"
+  "include": [
+    "index.d.ts",
+    "examples/*.ts"
   ]
 }
