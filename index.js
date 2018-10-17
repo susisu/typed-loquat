@@ -3,6 +3,24 @@
 const lq = require("loquat")();
 lq.use(require("loquat-token"));
 
+const Result = Object.freeze({
+  equal(resA, resB, valEqual, inputEqual, userStateEqual) {
+    return lq.Result.equal(resA, resB, valEqual, inputEqual, userStateEqual);
+  },
+  csuc(err, val, state) {
+    return new Success(true, err, val, state);
+  },
+  cerr(err) {
+    return new Failure(true, err);
+  },
+  esuc(err, val, state) {
+    return new Success(false, err, val, state);
+  },
+  eerr(err) {
+    return new Failure(false, err);
+  },
+});
+
 class Success extends lq.Result {
   constructor(consumed, err, val, state) {
     super(consumed, true, err, val, state);
@@ -52,7 +70,7 @@ module.exports = Object.freeze({
     // ## core.parser
     Config        : lq.Config,
     State         : lq.State,
-    Result        : lq.Result,
+    Result        : Result,
     Success       : Success,
     Failure       : Failure,
     AbstractParser: lq.AbstractParser,
