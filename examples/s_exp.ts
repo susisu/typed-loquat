@@ -1,4 +1,4 @@
-import * as lq from '../index';
+import * as lq from "../index";
 
 type Atom = string | null;
 type Cons = { car: SExp, cdr: SExp };
@@ -18,7 +18,7 @@ function lexeme<T>(parser: P<T>): P<T> {
 // expr ::= atom | list
 const expr: P<SExp> = lq.lazy(() => lq.choice<SExp>([
     atom,
-    list
+    list,
 ])).label("expression");
 
 // atom ::= letter atom_tail*

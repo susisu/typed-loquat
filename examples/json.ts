@@ -19,7 +19,7 @@ const value: P<{} | null> = lq.lazy(() => lq.choice<{} | null>([
     numberLiteral,
     trueLiteral,
     falseLiteral,
-    nullLiteral
+    nullLiteral,
 ]));
 
 // string literal
@@ -29,7 +29,7 @@ const escapeMap = new Map([
     ["f", "\f"],
     ["n", "\n"],
     ["r", "\r"],
-    ["t", "\t"]
+    ["t", "\t"],
 ]);
 function escape(str: string) {
     return str.replace(/\\(u[0-9A-Fa-f]{4}|[^u])/g, (_, e) => {

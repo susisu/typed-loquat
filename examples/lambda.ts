@@ -1,4 +1,4 @@
-import * as lq from '../index';
+import * as lq from "../index";
 
 type Term = Var | App | Abs;
 

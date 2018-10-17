@@ -1,4 +1,4 @@
-import * as lq from '../index';
+import * as lq from "../index";
 
 // P<T> is the type of a parser that yields T as its result
 type P<T> = lq.AbstractParser<T>;
@@ -39,19 +39,19 @@ const expr = lq.buildExpressionParser(
     [
         [
             new lq.PrefixOperator(plus),
-            new lq.PrefixOperator(minus)
+            new lq.PrefixOperator(minus),
         ],
         [
-            new lq.InfixOperator(pow, lq.OperatorAssoc.RIGHT)
+            new lq.InfixOperator(pow, lq.OperatorAssoc.RIGHT),
         ],
         [
             new lq.InfixOperator(mul, lq.OperatorAssoc.LEFT),
-            new lq.InfixOperator(div, lq.OperatorAssoc.LEFT)
+            new lq.InfixOperator(div, lq.OperatorAssoc.LEFT),
         ],
         [
             new lq.InfixOperator(add, lq.OperatorAssoc.LEFT),
-            new lq.InfixOperator(sub, lq.OperatorAssoc.LEFT)
-        ]
+            new lq.InfixOperator(sub, lq.OperatorAssoc.LEFT),
+        ],
     ],
     term
 );
