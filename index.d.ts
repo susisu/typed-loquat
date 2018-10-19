@@ -68,7 +68,7 @@ export declare class LazyParseError extends AbstractParseError {
 export declare interface IStream<T> {
     uncons(): Unconsed<T, IStream<T>>;
 }
-declare interface NilStream {
+declare interface EmptyStream {
     uncons(): EmptyUnconsed;
 }
 export declare type Stream<T> = (string extends T ? string : never) | T[] | IStream<T>;
@@ -77,7 +77,7 @@ export declare type AbstractStream<S> =
     | (S extends (infer T)[] ? T[] : never)
     | AbstractIStream<S>;
 declare type AbstractIStream<S> = S extends IStream<infer T>
-    ? (S extends NilStream ? S : ValidateIStream<S, UnconsedTail<ReturnType<S["uncons"]>>>)
+    ? (S extends EmptyStream ? S : ValidateIStream<S, UnconsedTail<ReturnType<S["uncons"]>>>)
     : never;
 declare type ValidateIStream<S, SS> = S extends SS ? SS : never;
 declare type UnconsedTail<U> = U extends NonEmptyUnconsed<unknown, infer S> ? S : never;
@@ -86,7 +86,7 @@ export declare type Token<S extends Stream<unknown>> =
     | (S extends (infer T)[] ? T : never)
     | IStreamToken<S>;
 declare type IStreamToken<S> = S extends IStream<infer T>
-    ? (S extends NilStream ? never : T)
+    ? (S extends EmptyStream ? never : T)
     : never;
 export declare function uncons<S extends Stream<unknown>>(
     input: AbstractStream<S>,
