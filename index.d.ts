@@ -68,18 +68,30 @@ export declare class LazyParseError extends AbstractParseError {
 export declare interface IStream<T> {
     uncons(): Unconsed<T, IStream<T>>;
 }
-export declare type Stream<T> = string extends T
-    ? string | T[] | IStream<T>
-    : T[] | IStream<T>;
+declare interface NilStream {
+    uncons(): EmptyUnconsed;
+}
+export declare type Stream<T> = (string extends T ? string : never) | T[] | IStream<T>;
+export declare type AbstractStream<S> =
+      (S extends string ? string : never)
+    | (S extends (infer T)[] ? T[] : never)
+    | AbstractIStream<S>;
+declare type AbstractIStream<S> = S extends IStream<infer T>
+    ? (S extends NilStream ? S : ValidateIStream<S, UnconsedTail<ReturnType<S["uncons"]>>>)
+    : never;
+declare type ValidateIStream<S, SS> = S extends SS ? SS : never;
+declare type UnconsedTail<U> = U extends NonEmptyUnconsed<unknown, infer S> ? S : never;
 export declare type Token<S extends Stream<unknown>> =
-      S extends string           ? string
-    : S extends (infer T)[]      ? T
-    : S extends IStream<infer T> ? T
+      (S extends string ? string : never)
+    | (S extends (infer T)[] ? T : never)
+    | IStreamToken<S>;
+declare type IStreamToken<S> = S extends IStream<infer T>
+    ? (S extends NilStream ? never : T)
     : never;
 export declare function uncons<S extends Stream<unknown>>(
-    input: S,
+    input: AbstractStream<S>,
     unicode: boolean
-): Unconsed<Token<S>, S>;
+): Unconsed<Token<S>, AbstractStream<S>>;
 export declare class ArrayStream<T> implements IStream<T> {
     constructor(arr: T[], index: number);
     readonly arr: T[];
@@ -357,24 +369,29 @@ export declare function tokens<S extends Stream<unknown> = string, U = undefined
     tokenEqual: (tokenA: Token<S>, tokenB: Token<S>) => boolean,
     tokensToString: (tokens: Token<S>[]) => string,
     calcNextPos: (pos: SourcePos, tokens: Token<S>[], config: Config) => SourcePos
-): AbstractParser<Token<S>[], S, U>;
+): AbstractParser<Token<S>[], AbstractStream<S>, U>;
 export declare function token<A, S extends Stream<unknown> = string, U = undefined>(
     calcValue: (token: Token<S>, config: Config) => Maybe<A>,
     tokenToString: (token: Token<S>) => string,
     calcPos: (token: Token<S>, config: Config) => SourcePos
-): AbstractParser<A, S, U>;
+): AbstractParser<A, AbstractStream<S>, U>;
 export declare function tokenPrim<A, S extends Stream<unknown> = string, U = undefined>(
     calcValue: (token: Token<S>, config: Config) => Maybe<A>,
     tokenToString: (token: Token<S>) => string,
-    calcNextPos: (pos: SourcePos, head: Token<S>, tail: S, config: Config) => SourcePos,
+    calcNextPos: (
+        pos: SourcePos,
+        head: Token<S>,
+        tail: AbstractStream<S>,
+        config: Config
+    ) => SourcePos,
     calcNextUserState?: (
         userState: U,
         pos: SourcePos,
         head: Token<S>,
-        tail: S,
+        tail: AbstractStream<S>,
         config: Config
     ) => U
-): AbstractParser<A, S, U>;
+): AbstractParser<A, AbstractStream<S>, U>;
 export declare const unsafeGetParserState: AbstractParser<State<any, any>, any, any>;
 export declare function getParserState<S = string, U = undefined>(
 ): AbstractParser<State<S, U>, S, U>;
@@ -408,55 +425,55 @@ export declare function setState<S = string, U = undefined>(
 // # char
 export declare function string<S extends Stream<string> = string, U = undefined>(
     str: string
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare function satisfy<S extends Stream<string> = string, U = undefined>(
     test: (char: string, config: Config) => boolean
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare function oneOf<S extends Stream<string> = string, U = undefined>(
     str: string
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare function noneOf<S extends Stream<string> = string, U = undefined>(
     str: string
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare function char<S extends Stream<string> = string, U = undefined>(
     expectChar: string
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeAnyChar: AbstractParser<string, any, any>;
 export declare function anyChar<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeSpace: AbstractParser<string, any, any>;
 export declare function space<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeSpaces: AbstractParser<undefined, any, any>;
 export declare function spaces<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<undefined, S, U>;
+): AbstractParser<undefined, AbstractStream<S>, U>;
 export declare const unsafeNewline: AbstractParser<string, any, any>;
 export declare function newline<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeTab: AbstractParser<string, any, any>;
 export declare function tab<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeUpper: AbstractParser<string, any, any>;
 export declare function upper<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeLower: AbstractParser<string, any, any>;
 export declare function lower<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeLetter: AbstractParser<string, any, any>;
 export declare function letter<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeDigit: AbstractParser<string, any, any>;
 export declare function digit<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeAlphaNum: AbstractParser<string, any, any>;
 export declare function alphaNum<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeOctDigit: AbstractParser<string, any, any>;
 export declare function octDigit<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare const unsafeHexDigit: AbstractParser<string, any, any>;
 export declare function hexDigit<S extends Stream<string> = string, U = undefined>(
-): AbstractParser<string, S, U>;
+): AbstractParser<string, AbstractStream<S>, U>;
 export declare function manyChars<S = string, U = undefined>(
     parser: AbstractParser<string, S, U>
 ): AbstractParser<string, S, U>;
@@ -541,13 +558,13 @@ export declare function chainr1<A, S = string, U = undefined>(
 ): AbstractParser<A, S, U>;
 export declare const unsafeAnyToken: AbstractParser<any, any, any>;
 export declare function anyToken<S extends Stream<unknown> = string, U = undefined>(
-): AbstractParser<Token<S>, S, U>;
+): AbstractParser<Token<S>, AbstractStream<S>, U>;
 export declare function notFollowedBy<A, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>
 ): AbstractParser<undefined, S, U>;
 export declare const unsafeEof: AbstractParser<undefined, any, any>;
 export declare function eof<S extends Stream<unknown> = string, U = undefined>(
-): AbstractParser<undefined, S, U>;
+): AbstractParser<undefined, AbstractStream<S>, U>;
 export declare function reduceManyTill<A, B, C, S = string, U = undefined>(
     parser: AbstractParser<A, S, U>,
     end: AbstractParser<B, S, U>,
@@ -788,5 +805,5 @@ export declare type TokenParser<S = string, U = undefined> = {
     reservedOp    : (name: string) => AbstractParser<undefined, S, U>,
 };
 export declare function makeTokenParser<S extends Stream<string> = string, U = undefined>(
-    def: LanguageDef<S, U>
-): TokenParser<S, U>;
+    def: LanguageDef<AbstractStream<S>, U>
+): TokenParser<AbstractStream<S>, U>;
