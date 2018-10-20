@@ -8,30 +8,18 @@ const Result = Object.freeze({
     return lq.Result.equal(resA, resB, valEqual, inputEqual, userStateEqual);
   },
   csuc(err, val, state) {
-    return new Success(true, err, val, state);
+    return lq.Result.csuc(err, val, state);
   },
   cerr(err) {
-    return new Failure(true, err);
+    return lq.Result.cerr(err);
   },
   esuc(err, val, state) {
-    return new Success(false, err, val, state);
+    return lq.Result.esuc(err, val, state);
   },
   eerr(err) {
-    return new Failure(false, err);
+    return lq.Result.eerr(err);
   },
 });
-
-class Success extends lq.Result {
-  constructor(consumed, err, val, state) {
-    super(consumed, true, err, val, state);
-  }
-}
-
-class Failure extends lq.Result {
-  constructor(consumed, err) {
-    super(consumed, false, err);
-  }
-}
 
 class InfixOperator extends lq.Operator {
   constructor(parser, assoc) {
@@ -71,8 +59,6 @@ module.exports = Object.freeze({
   Config            : lq.Config,
   State             : lq.State,
   Result            : Result,
-  Success           : Success,
-  Failure           : Failure,
   AbstractParser    : lq.AbstractParser,
   Parser            : lq.Parser,
   LazyParser        : lq.LazyParser,

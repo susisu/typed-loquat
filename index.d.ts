@@ -79,8 +79,8 @@ export declare type AbstractStream<S> =
 declare type AbstractIStream<S> = S extends IStream<infer T>
     ? (S extends EmptyStream ? S : ValidateIStream<S, UnconsedTail<ReturnType<S["uncons"]>>>)
     : never;
-declare type ValidateIStream<S, SS> = S extends SS ? SS : never;
 declare type UnconsedTail<U> = U extends NonEmptyUnconsed<unknown, infer S> ? S : never;
+declare type ValidateIStream<S, SS> = S extends SS ? SS : never;
 export declare type Token<S extends Stream<unknown>> =
       (S extends string ? string : never)
     | (S extends (infer T)[] ? T : never)
@@ -145,29 +145,19 @@ export declare const Result: Readonly<{
         state: State<S, U>
     ): Success<A, S, U>;
     eerr(err: AbstractParseError): Failure;
-}>
-export declare class Failure {
-    constructor(
-       consumed: boolean,
-       err: AbstractParseError
-   );
-   readonly consumed: boolean;
-   readonly success: false;
-   readonly err: AbstractParseError;
-}
-export declare class Success<A, S = string, U = undefined> {
-    constructor(
-       consumed: boolean,
-       err: AbstractParseError,
-       val: A,
-       state: State<S, U>
-   );
-   readonly consumed: boolean;
-   readonly success: true;
-   readonly err: AbstractParseError;
-   readonly val: A;
-   readonly state: State<S, U>;
-}
+}>;
+export declare type Failure = {
+   readonly consumed: boolean,
+   readonly success: false,
+   readonly err: AbstractParseError,
+};
+export declare type Success<A, S = string, U = undefined> = {
+   readonly consumed: boolean,
+   readonly success: true,
+   readonly err: AbstractParseError,
+   readonly val: A,
+   readonly state: State<S, U>,
+};
 export declare type ParseResult<A> =
       { success: false, error: AbstractParseError }
     | { success: true, value: A };
