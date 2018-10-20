@@ -722,22 +722,31 @@ export declare type Operator<A, S = string, U = undefined> =
       InfixOperator<A, S, U>
     | PrefixOperator<A, S, U>
     | PostfixOperator<A, S, U>;
-export declare class InfixOperator<A, S = string, U = undefined> {
-    constructor(parser: AbstractParser<(valA: A, valB: A) => A, S, U>, assoc: OperatorAssoc);
-    readonly type: "infix";
-    readonly parser: AbstractParser<(valA: A, valB: A) => A, S, U>;
-    readonly assoc: OperatorAssoc;
-}
-export declare class PrefixOperator<A, S = string, U = undefined> {
-    constructor(parser: AbstractParser<(val: A) => A, S, U>);
-    readonly type: "prefix";
-    readonly parser: AbstractParser<(val: A) => A, S, U>;
-}
-export declare class PostfixOperator<A, S = string, U = undefined> {
-    constructor(parser: AbstractParser<(val: A) => A, S, U>);
-    readonly type: "postfix";
-    readonly parser: AbstractParser<(val: A) => A, S, U>;
-}
+export declare const Operator: Readonly<{
+    infix<A, S = string, U = undefined>(
+        parser: AbstractParser<(valA: A, valB: A) => A, S, U>,
+        assoc: OperatorAssoc
+    ): InfixOperator<A, S, U>,
+    prefix<A, S = string, U = undefined>(
+        parser: AbstractParser<(val: A) => A, S, U>
+    ): PrefixOperator<A, S, U>,
+    postfix<A, S = string, U = undefined>(
+        parser: AbstractParser<(val: A) => A, S, U>
+    ): PostfixOperator<A, S, U>,
+}>;
+export declare type InfixOperator<A, S = string, U = undefined> = {
+    readonly type: "infix",
+    readonly parser: AbstractParser<(valA: A, valB: A) => A, S, U>,
+    readonly assoc: OperatorAssoc,
+};
+export declare type PrefixOperator<A, S = string, U = undefined> = {
+    readonly type: "prefix",
+    readonly parser: AbstractParser<(val: A) => A, S, U>,
+};
+export declare type PostfixOperator<A, S = string, U = undefined> = {
+    readonly type: "postfix",
+    readonly parser: AbstractParser<(val: A) => A, S, U>,
+};
 export declare function buildExpressionParser<A, S = string, U = undefined>(
     opTable: Operator<A, S, U>[][],
     atom: AbstractParser<A, S, U>

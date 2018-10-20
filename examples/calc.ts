@@ -38,19 +38,19 @@ const sub   = symbol("-").return((x: number, y: number) => x - y);
 const expr = lq.buildExpressionParser(
     [
         [
-            new lq.PrefixOperator(plus),
-            new lq.PrefixOperator(minus),
+            lq.Operator.prefix(plus),
+            lq.Operator.prefix(minus),
         ],
         [
-            new lq.InfixOperator(pow, lq.OperatorAssoc.RIGHT),
+            lq.Operator.infix(pow, lq.OperatorAssoc.RIGHT),
         ],
         [
-            new lq.InfixOperator(mul, lq.OperatorAssoc.LEFT),
-            new lq.InfixOperator(div, lq.OperatorAssoc.LEFT),
+            lq.Operator.infix(mul, lq.OperatorAssoc.LEFT),
+            lq.Operator.infix(div, lq.OperatorAssoc.LEFT),
         ],
         [
-            new lq.InfixOperator(add, lq.OperatorAssoc.LEFT),
-            new lq.InfixOperator(sub, lq.OperatorAssoc.LEFT),
+            lq.Operator.infix(add, lq.OperatorAssoc.LEFT),
+            lq.Operator.infix(sub, lq.OperatorAssoc.LEFT),
         ],
     ],
     term

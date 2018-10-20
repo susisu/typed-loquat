@@ -21,23 +21,17 @@ const Result = Object.freeze({
   },
 });
 
-class InfixOperator extends lq.Operator {
-  constructor(parser, assoc) {
-    super("infix", parser, assoc);
-  }
-}
-
-class PrefixOperator extends lq.Operator {
-  constructor(parser) {
-    super("prefix", parser);
-  }
-}
-
-class PostfixOperator extends lq.Operator {
-  constructor(parser) {
-    super("postfix", parser);
-  }
-}
+const Operator = Object.freeze({
+  infix(parser, assoc) {
+    return new lq.Operator("infix", parser, assoc);
+  },
+  prefix(parser) {
+    return new lq.Operator("prefix", parser);
+  },
+  postfix(parser) {
+    return new lq.Operator("postfix", parser);
+  },
+});
 
 module.exports = Object.freeze({
   // # core
@@ -215,9 +209,7 @@ module.exports = Object.freeze({
   // # expr
   OperatorType         : lq.OperatorType,
   OperatorAssoc        : lq.OperatorAssoc,
-  InfixOperator        : InfixOperator,
-  PrefixOperator       : PrefixOperator,
-  PostfixOperator      : PostfixOperator,
+  Operator             : Operator,
   buildExpressionParser: lq.buildExpressionParser,
 
   // # token
