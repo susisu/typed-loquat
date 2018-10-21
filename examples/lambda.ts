@@ -1,8 +1,7 @@
 import {
     AbstractParser,
-    LanguageDef,
     string as p,
-} from "../index";
+} from "..";
 
 type Term = Var | App | Abs;
 
@@ -37,7 +36,7 @@ class Abs {
 type P<T> = AbstractParser<T, string>;
 
 // generate a token parser from the language definition
-const languageDef = new LanguageDef({
+const languageDef = new p.LanguageDef({
     commentStart  : "(*",
     commentEnd    : "*)",
     commentLine   : "",

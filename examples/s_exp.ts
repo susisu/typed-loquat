@@ -1,7 +1,7 @@
 import {
     AbstractParser,
     string as p,
-} from "../index";
+} from "..";
 
 type Atom = string | null;
 type Cons = { car: SExp, cdr: SExp };

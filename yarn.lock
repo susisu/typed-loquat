@@ -631,18 +631,6 @@ loquat-token@~2.0.0:
     loquat-combinators "^2.0.0"
     loquat-prim "^2.0.0"
 
-loquat@~2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/loquat/-/loquat-2.0.0.tgz#365d1c8b98aeae79145675fb4cf798eba8634dc5"
-  dependencies:
-    loquat-char "~2.0.0"
-    loquat-combinators "~2.0.0"
-    loquat-core "~2.0.0"
-    loquat-expr "~2.0.0"
-    loquat-monad "~2.0.0"
-    loquat-prim "~2.0.0"
-    loquat-qo "~2.0.0"
-
 map-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/map-stream/-/map-stream-0.0.7.tgz#8a1f07896d82b10926bd3744a2420009f88974a8"

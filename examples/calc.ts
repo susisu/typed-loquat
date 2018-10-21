@@ -1,9 +1,7 @@
 import {
     AbstractParser,
-    Operator,
-    OperatorAssoc,
     string as p,
-} from "../index";
+} from "..";
 
 // P<T> is the type of a parser that yields T as its result
 type P<T> = AbstractParser<T, string>;
@@ -43,19 +41,19 @@ const sub   = symbol("-").return((x: number, y: number) => x - y);
 const expr = p.buildExpressionParser(
     [
         [
-            Operator.prefix(plus),
-            Operator.prefix(minus),
+            p.Operator.prefix(plus),
+            p.Operator.prefix(minus),
         ],
         [
-            Operator.infix(pow, OperatorAssoc.RIGHT),
+            p.Operator.infix(pow, p.OperatorAssoc.RIGHT),
         ],
         [
-            Operator.infix(mul, OperatorAssoc.LEFT),
-            Operator.infix(div, OperatorAssoc.LEFT),
+            p.Operator.infix(mul, p.OperatorAssoc.LEFT),
+            p.Operator.infix(div, p.OperatorAssoc.LEFT),
         ],
         [
-            Operator.infix(add, OperatorAssoc.LEFT),
-            Operator.infix(sub, OperatorAssoc.LEFT),
+            p.Operator.infix(add, p.OperatorAssoc.LEFT),
+            p.Operator.infix(sub, p.OperatorAssoc.LEFT),
         ],
     ],
     term

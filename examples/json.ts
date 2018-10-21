@@ -1,7 +1,7 @@
 import {
     AbstractParser,
     string as p,
-} from "../index";
+} from "..";
 
 // P<T> is the type of a parser that yields T as its result
 type P<T> = AbstractParser<T, string>;

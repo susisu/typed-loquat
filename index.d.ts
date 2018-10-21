@@ -26,6 +26,14 @@ export declare function show<T>(value: T): string;
  */
 export declare function unconsString(str: string, unicode: boolean): Unconsed<string, string>;
 
+// ## from "core/stream"
+export declare class ArrayStream<T> {
+    constructor(arr: T[], index: number);
+    readonly arr: T[];
+    readonly index: number;
+    uncons(): Unconsed<T, ArrayStream<T>>;
+}
+
 // ## from "core/pos"
 /**
  * `SourcePos` represents a position in source.
@@ -688,6 +696,31 @@ export declare type NaturalOrFloat =
     | { type: "float", value: number };
 
 // # parser modules
+declare type Classes = Readonly<{
+    // # from "core"
+    SourcePos         : typeof SourcePos,
+    ErrorMessageType  : typeof ErrorMessageType,
+    ErrorMessage      : typeof ErrorMessage,
+    AbstractParseError: typeof AbstractParseError,
+    ParseError        : typeof ParseError,
+    LazyParseError    : typeof LazyParseError,
+    Config            : typeof Config,
+    State             : typeof State,
+    Result            : typeof Result,
+    AbstractParser    : typeof AbstractParser,
+    Parser            : typeof Parser,
+    LazyParser        : typeof LazyParser,
+    isParser          : typeof isParser,
+    assertParser      : typeof assertParser,
+
+    // # from "expr"
+    OperatorType : typeof OperatorType,
+    OperatorAssoc: typeof OperatorAssoc,
+    Operator     : typeof Operator,
+
+    // # from "token"
+    LanguageDef: typeof LanguageDef,
+}>;
 /**
  * Set of generic parsers i.e. parsers that does not depend on any stream implementation.
  */
@@ -696,18 +729,18 @@ declare type GenericParserSet<S> = Readonly<{
     lazy<A, U = undefined>(
         thunk: () => AbstractParser<A, S, U>
     ): LazyParser<A, S, U>;
-    parse<A, U = undefined>(
-        parser: AbstractParser<A, S, U>,
-        name: string,
-        input: S,
-        userState: U,
-        opts?: ConfigOptions
-    ): ParseResult<A>;
     parse<A>(
         parser: AbstractParser<A, S, undefined>,
         name: string,
         input: S,
         userState?: undefined,
+        opts?: ConfigOptions
+    ): ParseResult<A>;
+    parse<A, U = undefined>(
+        parser: AbstractParser<A, S, U>,
+        name: string,
+        input: S,
+        userState: U,
         opts?: ConfigOptions
     ): ParseResult<A>;
 
@@ -1006,9 +1039,6 @@ declare type GenericParserSet<S> = Readonly<{
  * Set of parsers that depends on some stream implementation.
  */
 declare type TokenStreamParserSet<S, T> = Readonly<{
-    // # from "core"
-    uncons(input: S, unicode: boolean): Unconsed<T, S>,
-
     // # from "prim"
     tokens<U = undefined>(
         expectTokens: T[],
@@ -1119,7 +1149,8 @@ export declare function make<S, T>(
  * Type of standard parser module of stream type `S` and token type `T`.
  */
 declare type ParserModule<S, T> =
-      GenericParserSet<S>
+      Classes
+    & GenericParserSet<S>
     & TokenStreamParserSet<S, T>
     & (T extends string ? StringStreamParserSet<S> : unknown);
 
