@@ -1,10 +1,13 @@
-import * as lq from "../index";
+import {
+    AbstractParser,
+    string as p,
+} from "../index";
 
 // P<T> is the type of a parser that yields T as its result
-type P<T> = lq.AbstractParser<T>;
+type P<T> = AbstractParser<T, string>;
 
 // parser that skips whitespace characters
-const spaces = lq.spaces().label("");
+const spaces = p.spaces().label("");
 
 // skip trailing whitespace
 function lexeme<T>(parser: P<T>): P<T> {
@@ -12,8 +15,8 @@ function lexeme<T>(parser: P<T>): P<T> {
 }
 
 // all JSON values
-const value: P<{} | null> = lq.lazy(() => lq.choice<{} | null>([
-    object,
+const value: P<{} | null> = p.lazy(() => p.choice([
+    object as P<{}>,
     array,
     stringLiteral,
     numberLiteral,
@@ -45,41 +48,41 @@ function escape(str: string) {
         }
     });
 }
-const stringLiteral = lexeme(lq.regexp(stringRegExp, 1))
+const stringLiteral = lexeme(p.regexp(stringRegExp, 1))
     .map(escape)
     .label("string");
 
 // number literal
 const numberRegExp = /\-?(0|[1-9]\d*)(\.\d*)?([Ee][+\-]?\d*)?/;
-const numberLiteral = lexeme(lq.regexp(numberRegExp))
+const numberLiteral = lexeme(p.regexp(numberRegExp))
     .map(Number)
     .label("number");
 
 // boolean literals
-const trueLiteral = lexeme(lq.string("true"))
+const trueLiteral = lexeme(p.string("true"))
     .return(true)
     .label("true");
 
-const falseLiteral = lexeme(lq.string("false"))
+const falseLiteral = lexeme(p.string("false"))
     .return(false)
     .label("false");
 
 // null literal
-const nullLiteral = lexeme(lq.string("null"))
+const nullLiteral = lexeme(p.string("null"))
     .return(null)
     .label("null");
 
 // object and array
-const lbrace   = lexeme(lq.char("{"));
-const rbrace   = lexeme(lq.char("}"));
-const lbracket = lexeme(lq.char("["));
-const rbracket = lexeme(lq.char("]"));
-const colon    = lexeme(lq.char(":"));
-const comma    = lexeme(lq.char(","));
+const lbrace   = lexeme(p.char("{"));
+const rbrace   = lexeme(p.char("}"));
+const lbracket = lexeme(p.char("["));
+const rbracket = lexeme(p.char("]"));
+const colon    = lexeme(p.char(":"));
+const comma    = lexeme(p.char(","));
 
 const keyValue = stringLiteral.bind(key =>
     colon.and(value).bind(val =>
-        lq.pure<[string, {} | null]>([key, val])
+        p.pure<[string, {} | null]>([key, val])
     )
 );
 const object = keyValue
@@ -101,7 +104,7 @@ const array = value
 
 const json: P<{} | null> = spaces
     .and(value)
-    .skip(lq.eof());
+    .skip(p.eof());
 
 export function parseJson(src: string): {} | null {
     const res = json.parse("", src);

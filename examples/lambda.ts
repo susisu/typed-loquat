@@ -1,4 +1,8 @@
-import * as lq from "../index";
+import {
+    AbstractParser,
+    LanguageDef,
+    string as p,
+} from "../index";
 
 type Term = Var | App | Abs;
 
@@ -30,26 +34,26 @@ class Abs {
 }
 
 // P<T> is the type of a parser that yields T as its result
-type P<T> = lq.AbstractParser<T>;
+type P<T> = AbstractParser<T, string>;
 
 // generate a token parser from the language definition
-const languageDef = new lq.LanguageDef({
+const languageDef = new LanguageDef({
     commentStart  : "(*",
     commentEnd    : "*)",
     commentLine   : "",
     nestedComments: true,
-    idStart       : lq.letter(),
-    idLetter      : lq.alphaNum().or(lq.char("_")),
-    opStart       : lq.oneOf("->"),
-    opLetter      : lq.oneOf("->"),
+    idStart       : p.letter(),
+    idLetter      : p.alphaNum().or(p.char("_")),
+    opStart       : p.oneOf("->"),
+    opLetter      : p.oneOf("->"),
     reservedIds   : ["fun"],
     reservedOps   : ["->"],
     caseSensitive : false,
 });
-const tp = lq.makeTokenParser(languageDef);
+const tp = p.makeTokenParser(languageDef);
 
 // term ::= app | abs
-const term: P<Term> = lq.lazy(() =>
+const term: P<Term> = p.lazy(() =>
     app.or(abs)
 );
 
@@ -77,7 +81,7 @@ const abs = fun.and(tp.identifier).bind(paramName =>
     )
 );
 
-const parser: P<Term> = tp.whiteSpace.and(term).skip(lq.eof());
+const parser: P<Term> = tp.whiteSpace.and(term).skip(p.eof());
 
 export function parseLambda(src: string): Term {
     const res = parser.parse("", src);
