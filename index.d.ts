@@ -65,7 +65,7 @@ export declare class LazyParseError extends AbstractParseError {
 }
 
 // ## from "core/parser"
-export declare type ConfigOptions = { tabWidth: number, unicode: boolean };
+export declare type ConfigOptions = { tabWidth?: number, unicode?: boolean };
 export declare class Config {
     constructor(opts: ConfigOptions);
     static equal(configA: Config, configB: Config): boolean;
