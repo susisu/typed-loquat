@@ -1,6 +1,7 @@
 import {
     AbstractParser,
-    string as p,
+    LanguageDef,
+    string,
 } from "..";
 
 type Term = Var | App | Abs;
@@ -32,17 +33,20 @@ class Abs {
     }
 }
 
-// P<T> is the type of a parser that yields T as its result
+// define P<T> as the type of a parser that takes input string and yields T as its result
 type P<T> = AbstractParser<T, string>;
 
+// make parsers
+const p = string();
+
 // generate a token parser from the language definition
-const languageDef = new p.LanguageDef({
+const languageDef = new LanguageDef({
     commentStart  : "(*",
     commentEnd    : "*)",
     commentLine   : "",
     nestedComments: true,
-    idStart       : p.letter(),
-    idLetter      : p.alphaNum().or(p.char("_")),
+    idStart       : p.letter,
+    idLetter      : p.alphaNum.or(p.char("_")),
     opStart       : p.oneOf("->"),
     opLetter      : p.oneOf("->"),
     reservedIds   : ["fun"],
@@ -80,7 +84,7 @@ const abs = fun.and(tp.identifier).bind(paramName =>
     )
 );
 
-const parser: P<Term> = tp.whiteSpace.and(term).skip(p.eof());
+const parser: P<Term> = tp.whiteSpace.and(term).skip(p.eof);
 
 export function parseLambda(src: string): Term {
     const res = parser.parse("", src);

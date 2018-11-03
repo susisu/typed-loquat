@@ -1,13 +1,16 @@
 import {
     AbstractParser,
-    string as p,
+    string,
 } from "..";
 
-// P<T> is the type of a parser that yields T as its result
+// define P<T> as the type of a parser that takes input string and yields T as its result
 type P<T> = AbstractParser<T, string>;
 
+// make parsers
+const p = string();
+
 // parser that skips whitespace characters
-const spaces = p.spaces().label("");
+const spaces = p.spaces.label("");
 
 // skip trailing whitespace
 function lexeme<T>(parser: P<T>): P<T> {
@@ -104,7 +107,7 @@ const array = value
 
 const json: P<{} | null> = spaces
     .and(value)
-    .skip(p.eof());
+    .skip(p.eof);
 
 export function parseJson(src: string): {} | null {
     const res = json.parse("", src);

@@ -1,13 +1,18 @@
 import {
     AbstractParser,
-    string as p,
+    Operator,
+    OperatorAssoc,
+    string,
 } from "..";
 
-// P<T> is the type of a parser that yields T as its result
+// define P<T> as the type of a parser that takes input string and yields T as its result
 type P<T> = AbstractParser<T, string>;
 
+// make parsers
+const p = string();
+
 // parser that skips whitespace characters
-const spaces = p.spaces().label("");
+const spaces = p.spaces.label("");
 
 // skips trailing spaces
 function lexeme<T>(parser: P<T>): P<T> {
@@ -41,25 +46,25 @@ const sub   = symbol("-").return((x: number, y: number) => x - y);
 const expr = p.buildExpressionParser(
     [
         [
-            p.Operator.prefix(plus),
-            p.Operator.prefix(minus),
+            Operator.prefix(plus),
+            Operator.prefix(minus),
         ],
         [
-            p.Operator.infix(pow, p.OperatorAssoc.RIGHT),
+            Operator.infix(pow, OperatorAssoc.RIGHT),
         ],
         [
-            p.Operator.infix(mul, p.OperatorAssoc.LEFT),
-            p.Operator.infix(div, p.OperatorAssoc.LEFT),
+            Operator.infix(mul, OperatorAssoc.LEFT),
+            Operator.infix(div, OperatorAssoc.LEFT),
         ],
         [
-            p.Operator.infix(add, p.OperatorAssoc.LEFT),
-            p.Operator.infix(sub, p.OperatorAssoc.LEFT),
+            Operator.infix(add, OperatorAssoc.LEFT),
+            Operator.infix(sub, OperatorAssoc.LEFT),
         ],
     ],
     term
 );
 
-const calc: P<number> = spaces.and(expr).left(p.eof());
+const calc: P<number> = spaces.and(expr).left(p.eof);
 
 export function calcExpr(src: string): number {
     const res = calc.parse("", src);

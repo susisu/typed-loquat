@@ -1,17 +1,20 @@
 import {
     AbstractParser,
-    string as p,
+    string,
 } from "..";
 
 type Atom = string | null;
 type Cons = { car: SExp, cdr: SExp };
 type SExp = Atom | Cons;
 
-// P<T> is the type of a parser that yields T as its result
+// define P<T> as the type of a parser that takes input string and yields T as its result
 type P<T> = AbstractParser<T, string>;
 
+// make parsers
+const p = string();
+
 // parser that skips whitespace characters
-const spaces = p.spaces().label("");
+const spaces = p.spaces.label("");
 
 // skip trailing whitespace
 function lexeme<T>(parser: P<T>): P<T> {
@@ -27,8 +30,8 @@ const expr: P<SExp> = p.lazy(() => p.choice([
 // atom ::= letter atom_tail*
 // atom_tail ::= letter | number
 const atom = lexeme(p.do<Atom>(function* () {
-    const x  = yield p.letter();
-    const xs = yield p.alphaNum().manyChars();
+    const x  = yield p.letter;
+    const xs = yield p.alphaNum.manyChars();
     return x + xs;
 })).label("atom");
 
@@ -41,7 +44,7 @@ const list = p.do<SExp>(function* () {
     return xs.reduceRight((ys: SExp, y: SExp) => ({ car: y, cdr: ys }), x);
 }).label("list");
 
-const parser: P<SExp> = spaces.and(expr).skip(p.eof());
+const parser: P<SExp> = spaces.and(expr).skip(p.eof);
 
 export function parseSExpr(src: string): SExp {
     const res = parser.parse("", src);
