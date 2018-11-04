@@ -456,8 +456,6 @@ export abstract class AbstractParser<A, S, U = undefined> {
 export type ParseResult<A> =
       { success: false; error: AbstractParseError }
     | { success: true; value: A };
-// Disable TSLint since conditional types are not supported and cause errors.
-/* tslint:disable */
 type MethodParse<A, S, U> = U extends undefined
     ? (name: string, input: S, userState?: U, opts?: ConfigOptions) => ParseResult<A>
     : (name: string, input: S, userState: U, opts?: ConfigOptions) => ParseResult<A>;
@@ -470,7 +468,6 @@ type MethodManyChar<A, S, U> = A extends string
 type MethodJoin<A, S, U> = A extends AbstractParser <infer B, S, U>
     ? () => AbstractParser<B, S, U>
     : unknown;
-/* tslint:enable */
 /**
  * `Parser<A, S, U>` represents a standard parser. A parser can be considered a function that takes
  * the initial state and returns the final state and a resultant value when successful.
@@ -1050,8 +1047,6 @@ type StringParsers<U> = Readonly<{
     // # from "char"
     regexp(re: RegExp, groupId?: number): AbstractParser<string, string, U>;
 }>;
-// Disable TSLint since conditional types are not supported and cause errors.
-/* tslint:disable */
 /**
  * Set of parsers of stream type `S` and token type `T`.
  */
@@ -1059,7 +1054,6 @@ type Parsers<S, T, U> =
       GenericsParsers<S, U>
     & TokenStreamParsers<S, T, U>
     & (T extends string ? StringStreamParsers<S, U> : unknown);
-/* tslint:enable */
 /**
  * String parsers.
  */
