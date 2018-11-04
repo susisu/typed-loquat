@@ -46,7 +46,7 @@ const list = p.do<SExp>(function* () {
 
 const parser: P<SExp> = spaces.and(expr).skip(p.eof);
 
-export function parseSExpr(src: string): SExp {
+export function parseSExp(src: string): SExp {
     const res = parser.parse("", src);
     if (res.success) {
         return res.value;
