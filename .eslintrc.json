@@ -88,8 +88,7 @@
     "jsx-quotes": ["error", "prefer-double"],
     "key-spacing": ["error", {
       "beforeColon": false,
-      "afterColon": true,
-      "align": "colon" }],
+      "afterColon": true }],
     "keyword-spacing": ["error", {
       "before": true,
       "after": true }],
