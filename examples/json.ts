@@ -38,13 +38,13 @@ const escapeMap = new Map([
     ["t", "\t"],
 ]);
 function escape(str: string) {
-    return str.replace(/\\(u[0-9A-Fa-f]{4}|[^u])/g, (_, e) => {
+    return str.replace(/\\(u[0-9A-Fa-f]{4}|[^u])/g, (_, e: string) => {
         const type = e[0];
         if (type === "u") {
             return String.fromCharCode(parseInt(e.substr(1), 16));
         }
         else if (escapeMap.has(type)) {
-            return escapeMap.get(type);
+            return escapeMap.get(type)!;
         }
         else {
             return type;

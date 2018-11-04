@@ -10,7 +10,7 @@ type Term = Var | App | Abs;
 class Var {
     constructor(readonly name: string) {}
 
-    toString(): string {
+    public toString(): string {
         return this.name;
     }
 }
@@ -19,7 +19,7 @@ class Var {
 class App {
     constructor(readonly fun: Term, readonly arg: Term) {}
 
-    toString(): string {
+    public toString(): string {
         return `(${this.fun.toString()} ${this.arg.toString()})`;
     }
 }
@@ -28,7 +28,7 @@ class App {
 class Abs {
     constructor(readonly paramName: string, readonly body: Term) {}
 
-    toString(): string {
+    public toString(): string {
         return `(fun ${this.paramName} -> ${this.body.toString()})`;
     }
 }

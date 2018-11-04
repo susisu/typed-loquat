@@ -4,7 +4,7 @@ import {
 } from "..";
 
 type Atom = string | null;
-type Cons = { car: SExp, cdr: SExp };
+type Cons = { car: SExp; cdr: SExp };
 type SExp = Atom | Cons;
 
 // define P<T> as the type of a parser that takes input string and yields T as its result
@@ -30,8 +30,8 @@ const expr: P<SExp> = p.lazy(() => p.choice([
 // atom ::= letter atom_tail*
 // atom_tail ::= letter | number
 const atom = lexeme(p.do<Atom>(function* () {
-    const x  = yield p.letter;
-    const xs = yield p.alphaNum.manyChars();
+    const x: string = yield p.letter;
+    const xs: string = yield p.alphaNum.manyChars();
     return x + xs;
 })).label("atom");
 
@@ -39,7 +39,7 @@ const atom = lexeme(p.do<Atom>(function* () {
 const list = p.do<SExp>(function* () {
     yield lexeme(p.char("("));
     const xs: SExp[] = yield expr.many();
-    const x: SExp  = yield p.option(null, lexeme(p.char(".")).and(expr));
+    const x: SExp = yield p.option(null, lexeme(p.char(".")).and(expr));
     yield lexeme(p.char(")"));
     return xs.reduceRight((ys: SExp, y: SExp) => ({ car: y, cdr: ys }), x);
 }).label("list");
