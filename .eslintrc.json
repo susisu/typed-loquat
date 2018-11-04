@@ -83,11 +83,7 @@
     "func-name-matching": ["error"],
     "func-style": ["error", "declaration", {
       "allowArrowFunctions": true }],
-    "indent": ["error", 2, {
-      "VariableDeclarator": {
-        "var": 2,
-        "let": 2,
-        "const": 3 },
+    "indent": ["error", 4, {
       "ignoredNodes": ["ConditionalExpression"] }],
     "jsx-quotes": ["error", "prefer-double"],
     "key-spacing": ["error", {
