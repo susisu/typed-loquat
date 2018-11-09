@@ -185,6 +185,7 @@ module.exports = Object.freeze({
     show: lq.show,
     unconsString: lq.unconsString,
     // ## from "core/stream"
+    uncons: lq.uncons,
     ArrayStream: lq.ArrayStream,
     // ## from "core/pos"
     SourcePos: lq.SourcePos,

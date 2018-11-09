@@ -27,6 +27,12 @@ export declare function show<T>(value: T): string;
 export declare function unconsString(str: string, unicode: boolean): Unconsed<string, string>;
 
 // ## from "core/stream"
+export declare function uncons(input: string, unicode: boolean): Unconsed<string, string>;
+export declare function uncons<T>(input: T[], unicode: boolean): Unconsed<T, T[]>;
+export declare function uncons<T, S extends { uncons(): Unconsed<T, S> }>(
+    input: S,
+    unicode: boolean
+): Unconsed<T, S>;
 export declare class ArrayStream<T> {
     public readonly arr: T[];
     public readonly index: number;
@@ -1066,5 +1072,4 @@ export declare function array<T, U = undefined>(): Parsers<T[], T, U>;
  * Stream parsers. A stream must implement `uncons` method.
  */
 export declare function stream<T, S extends { uncons(): Unconsed<T, S> }, U = undefined>(
-
 ): Parsers<S, T, U>;
