@@ -2,17 +2,17 @@
 /**
  * `Maybe<A>` represents a value that can be empty or of type `A`.
  */
-export type Maybe<A> = { empty: true } | { empty: false; value: A };
+export declare type Maybe<A> = { empty: true } | { empty: false; value: A };
 /**
  * AssocValueOf<T> computes the union type of the values associated to `T`.
  */
-type AssocValueOf<T> = T[keyof T];
+declare type AssocValueOf<T> = T[keyof T];
 
 /**
  * `Unconsed<T, S>` represents a result of `uncons` that can be empty or a pair of head `T` and tail
  * `S`.
  */
-export type Unconsed<T, S> = { empty: true } | { empty: false; head: T; tail: S };
+export declare type Unconsed<T, S> = { empty: true } | { empty: false; head: T; tail: S };
 
 // # from "core"
 // ## from "core/utils"
@@ -44,7 +44,7 @@ export declare class ArrayStream<T> {
 /**
  * `SourcePos` represents a position in source.
  */
-export class SourcePos {
+export declare class SourcePos {
     /**
      * Creates an initial position i.e. line 1 and column 1.
      */
@@ -103,7 +103,7 @@ export class SourcePos {
 /**
  * `ErrorMessageType` represents types of error messages.
  */
-export type ErrorMessageType = AssocValueOf<typeof ErrorMessageType>;
+export declare type ErrorMessageType = AssocValueOf<typeof ErrorMessageType>;
 export declare const ErrorMessageType: Readonly<{
     SYSTEM_UNEXPECT: "systemUnexpect";
     UNEXPECT: "unexpect";
@@ -113,7 +113,7 @@ export declare const ErrorMessageType: Readonly<{
 /**
  * `ErrorMessage` represents a single error message in parse error.
  */
-export class ErrorMessage {
+export declare class ErrorMessage {
     /**
      * Tests if two error messages are equal.
      */
@@ -142,7 +142,7 @@ export class ErrorMessage {
 /**
  * `AbstractParseError` represents a parse error raised at some position in source.
  */
-export abstract class AbstractParseError {
+export declare abstract class AbstractParseError {
     /**
      * Position where the parse error is raised.
      */
@@ -179,7 +179,7 @@ export abstract class AbstractParseError {
 /**
  * `ParseError` represents a standard parse error.
  */
-export class ParseError extends AbstractParseError {
+export declare class ParseError extends AbstractParseError {
     /**
      * Creates an unknown parse error with no messages.
      */
@@ -200,7 +200,7 @@ export class ParseError extends AbstractParseError {
 /**
  * `LazyParseError` is a lazy evaluated version of `ParseError`.
  */
-export class LazyParseError extends AbstractParseError {
+export declare class LazyParseError extends AbstractParseError {
     /**
      * Creates a new `LazyParseError` instance.
      */
@@ -215,11 +215,11 @@ export class LazyParseError extends AbstractParseError {
 /**
  * Argument to the `Config` constructor.
  */
-export type ConfigOptions = { tabWidth?: number; unicode?: boolean };
+export declare type ConfigOptions = { tabWidth?: number; unicode?: boolean };
 /**
  * `Config` contains configuration information of parser.
  */
-export class Config {
+export declare class Config {
     /**
      * Tests if two configurations are equal.
      */
@@ -240,7 +240,7 @@ export class Config {
 /**
  * `State<S, U>` represents state of parsers of stream type `S` and user defined state type `U`.
  */
-export class State<S, U = undefined> {
+export declare class State<S, U = undefined> {
     /**
      * Tests if two states are equal.
      */
@@ -291,7 +291,7 @@ export class State<S, U = undefined> {
  * `Result<A, S, U>` represents a result of a parser of stream type `S` and user defined state
  * type `U`. It can be failure, or success with a value of type `A`.
  */
-export type Result<A, S, U = undefined> = Failure | Success<A, S, U>;
+export declare type Result<A, S, U = undefined> = Failure | Success<A, S, U>;
 export declare const Result: {
     /**
      * Tests if two results are equal.
@@ -332,7 +332,7 @@ export declare const Result: {
 /**
  * `Failure` represents a unsuccessful result.
  */
-export type Failure = {
+export declare type Failure = {
     /**
      * Whether the parser consumed some tokens from input or not.
      */
@@ -349,7 +349,7 @@ export type Failure = {
 /**
  * `Success` represents a successful result.
  */
-export type Success<A, S, U> = {
+export declare type Success<A, S, U> = {
     /**
      * Whether the parser consumed some tokens from input or not.
      */
@@ -376,7 +376,7 @@ export type Success<A, S, U> = {
  * `AbstractParser<A, S, U>` represents a parser of stream type `S` and user defined state type `U`
  * that yield a value of type `A` when it successes.
  */
-export abstract class AbstractParser<A, S, U = undefined> {
+export declare abstract class AbstractParser<A, S, U = undefined> {
     // # from "core"
     /**
      * Runs a parser with the initial state and returns a result. This is a primitive operation
@@ -459,41 +459,41 @@ export abstract class AbstractParser<A, S, U = undefined> {
  * `ParseResult<A>` represents a result that can be failure with a parse error, or success with a
  * value of type `A`.
  */
-export type ParseResult<A> =
+export declare type ParseResult<A> =
       { success: false; error: AbstractParseError }
     | { success: true; value: A };
-type MethodParse<A, S, U> = U extends undefined
+declare type MethodParse<A, S, U> = U extends undefined
     ? (name: string, input: S, userState?: U, opts?: ConfigOptions) => ParseResult<A>
     : (name: string, input: S, userState: U, opts?: ConfigOptions) => ParseResult<A>;
-type MethodAp<A, S, U> = A extends (val: infer B) => infer C
+declare type MethodAp<A, S, U> = A extends (val: infer B) => infer C
     ? (parser: AbstractParser<B, S, U>) => AbstractParser<C, S, U>
     : unknown;
-type MethodManyChar<A, S, U> = A extends string
+declare type MethodManyChar<A, S, U> = A extends string
     ? () => AbstractParser<string, S, U>
     : unknown;
-type MethodJoin<A, S, U> = A extends AbstractParser <infer B, S, U>
+declare type MethodJoin<A, S, U> = A extends AbstractParser <infer B, S, U>
     ? () => AbstractParser<B, S, U>
     : unknown;
 /**
  * `Parser<A, S, U>` represents a standard parser. A parser can be considered a function that takes
  * the initial state and returns the final state and a resultant value when successful.
  */
-export class Parser<A, S, U = undefined> extends AbstractParser<A, S, U> {
+export declare class Parser<A, S, U = undefined> extends AbstractParser<A, S, U> {
     constructor(func: (state: State<S, U>) => Result<A, S, U>);
 }
 /**
  * `LazyParser<A, S, U>` is a lazy evaluated version of `Parser<A, S, U>`.
  */
-export class LazyParser<A, S, U = undefined> extends AbstractParser<A, S, U> {
+export declare class LazyParser<A, S, U = undefined> extends AbstractParser<A, S, U> {
     constructor(thunk: () => AbstractParser<A, S, U>);
     /**
      * Forces evaluation.
      */
     public eval(): Parser<A, S, U>;
 }
-export type StringParser<A, U = undefined> = AbstractParser<A, string, U>;
-export type ArrayParser<A, T, U = undefined> = AbstractParser<A, T[], U>;
-export type StreamParser<A, T, S extends { uncons(): Unconsed<T, S> }, U = undefined> =
+export declare type StringParser<A, U = undefined> = AbstractParser<A, string, U>;
+export declare type ArrayParser<A, T, U = undefined> = AbstractParser<A, T[], U>;
+export declare type StreamParser<A, T, S extends { uncons(): Unconsed<T, S> }, U = undefined> =
     AbstractParser<A, S, U>;
 export declare function parse<A, S>(
     parser: AbstractParser<A, S, undefined>,
@@ -523,21 +523,21 @@ export declare function assertParser<T>(val: T): undefined;
  * `TailRec<A, B>` is used in return values of the `tailRecM` function and represents a parsing
  * should be continued with an accumulated value of type `A` or done with a final value of type `B`.
  */
-export type TailRec<A, B> = TailRecCont<A> | TailRecDone<B>;
+export declare type TailRec<A, B> = TailRecCont<A> | TailRecDone<B>;
 /**
  * `TailRecCont<A>` represents a parsing should be continued.
  */
-export type TailRecCont<A> = { done: false; value: A };
+export declare type TailRecCont<A> = { done: false; value: A };
 /**
  * `TailRecCont<A>` represents a parsing should be done.
  */
-export type TailRecDone<A> = { done: true; value: A };
+export declare type TailRecDone<A> = { done: true; value: A };
 
 // # from "expr"
 /**
  * `OperatorType` represents type of operators.
  */
-export type OperatorType = AssocValueOf<typeof OperatorType>;
+export declare type OperatorType = AssocValueOf<typeof OperatorType>;
 export declare const OperatorType: Readonly<{
     INFIX: "infix";
     PREFIX: "prefix";
@@ -546,7 +546,7 @@ export declare const OperatorType: Readonly<{
 /**
  * `OperatorAssoc` represents associativity of infix operators.
  */
-export type OperatorAssoc = AssocValueOf<typeof OperatorAssoc>;
+export declare type OperatorAssoc = AssocValueOf<typeof OperatorAssoc>;
 export declare const OperatorAssoc: Readonly<{
     NONE: "none";
     LEFT: "left";
@@ -555,7 +555,7 @@ export declare const OperatorAssoc: Readonly<{
 /**
  * `Operator<A, S, U>` represents an operator that operates on `A`.
  */
-export type Operator<A, S, U = undefined> =
+export declare type Operator<A, S, U = undefined> =
       InfixOperator<A, S, U>
     | PrefixOperator<A, S, U>
     | PostfixOperator<A, S, U>;
@@ -579,7 +579,7 @@ export declare const Operator: {
 /**
  * `InfixOperator<A, S, U>` represents an infix operator that operates on `A`.
  */
-export type InfixOperator<A, S, U = undefined> = {
+export declare type InfixOperator<A, S, U = undefined> = {
     /**
      * `"infix"`.
      */
@@ -596,7 +596,7 @@ export type InfixOperator<A, S, U = undefined> = {
 /**
  * `PrefixOperator<A, S, U>` represents a prefix operator that operates on `A`.
  */
-export type PrefixOperator<A, S, U = undefined> = {
+export declare type PrefixOperator<A, S, U = undefined> = {
     /**
      * `"prefix"`.
      */
@@ -609,7 +609,7 @@ export type PrefixOperator<A, S, U = undefined> = {
 /**
  * `PostfixOperator<A, S, U>` represents a postfix operator that operates on `A`.
  */
-export type PostfixOperator<A, S, U = undefined> = {
+export declare type PostfixOperator<A, S, U = undefined> = {
     /**
      * `"postfix"`.
      */
@@ -624,7 +624,7 @@ export type PostfixOperator<A, S, U = undefined> = {
 /**
  * Argument to the `LanguageDef` constructor.
  */
-export type LanguageDefObj<S, U = undefined> = {
+export declare type LanguageDefObj<S, U = undefined> = {
     commentStart?: string;
     commentEnd?: string;
     commentLine?: string;
@@ -640,7 +640,7 @@ export type LanguageDefObj<S, U = undefined> = {
 /**
  * `LanguageDef<S, U>` defines a language.
  */
-export class LanguageDef<S, U = undefined> {
+export declare class LanguageDef<S, U = undefined> {
     constructor(obj: LanguageDefObj<S, U>);
     /**
      * A string that marks the start of a multiline comment. The language has no multiline comments
@@ -697,7 +697,7 @@ export class LanguageDef<S, U = undefined> {
 /**
  * `TokenParser<S, U>` represents a set of token parsers.
  */
-export type TokenParser<S, U> = {
+export declare type TokenParser<S, U> = {
     whiteSpace: AbstractParser<undefined, S, U>;
     lexeme: <A>(parser: AbstractParser<A, S, U>) => AbstractParser<A, S, U>;
     symbol: (name: string) => AbstractParser<string, S, U>;
@@ -730,7 +730,7 @@ export type TokenParser<S, U> = {
 /**
  * `NaturalOrFloat` represents a natural (integer) value or a float value.
  */
-export type NaturalOrFloat =
+export declare type NaturalOrFloat =
       { type: "natural"; value: number }
     | { type: "float"; value: number };
 
@@ -738,7 +738,7 @@ export type NaturalOrFloat =
 /**
  * Set of generic parsers i.e. parsers that does not depend on any stream implementation.
  */
-type GenericsParsers<S, U> = Readonly<{
+declare type GenericsParsers<S, U> = Readonly<{
     // # from "core"
     lazy<A>(thunk: () => AbstractParser<A, S, U>): AbstractParser<A, S, U>;
 
@@ -988,7 +988,7 @@ type GenericsParsers<S, U> = Readonly<{
 /**
  * Set of parsers that depends on some stream implementation.
  */
-type TokenStreamParsers<S, T, U> = Readonly<{
+declare type TokenStreamParsers<S, T, U> = Readonly<{
     // # from "prim"
     tokens(
         expectTokens: T[],
@@ -1027,7 +1027,7 @@ type TokenStreamParsers<S, T, U> = Readonly<{
 /**
  * Set of parsers that depends on some stream that yields string.
  */
-type StringStreamParsers<S, U> = Readonly<{
+declare type StringStreamParsers<S, U> = Readonly<{
     // # from "char"
     string(str: string): AbstractParser<string, S, U>;
     satisfy(test: (char: string, config: Config) => boolean): AbstractParser<string, S, U>;
@@ -1053,14 +1053,14 @@ type StringStreamParsers<S, U> = Readonly<{
 /**
  * Set of parsers that depends on the predefined string stream implementation.
  */
-type StringParsers<U> = Readonly<{
+declare type StringParsers<U> = Readonly<{
     // # from "char"
     regexp(re: RegExp, groupId?: number): AbstractParser<string, string, U>;
 }>;
 /**
  * Set of parsers of stream type `S` and token type `T`.
  */
-type Parsers<S, T, U> =
+declare type Parsers<S, T, U> =
       GenericsParsers<S, U>
     & TokenStreamParsers<S, T, U>
     & (T extends string ? StringStreamParsers<S, U> : unknown);
