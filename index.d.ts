@@ -491,6 +491,10 @@ export class LazyParser<A, S, U = undefined> extends AbstractParser<A, S, U> {
      */
     public eval(): Parser<A, S, U>;
 }
+export type StringParser<A, U = undefined> = AbstractParser<A, string, U>;
+export type ArrayParser<A, T, U = undefined> = AbstractParser<A, T[], U>;
+export type StreamParser<A, T, S extends { uncons(): Unconsed<T, S> }, U = undefined> =
+    AbstractParser<A, S, U>;
 export declare function parse<A, S>(
     parser: AbstractParser<A, S, undefined>,
     name: string,
