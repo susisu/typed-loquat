@@ -1,5 +1,5 @@
 # typed-loquat
-TypeScript interface of [loquat](https://github.com/loquat2), a monadic parser combinator library for JavaScript.
+TypeScript interface of [loquat](https://github.com/susisu/loquat2), a monadic parser combinator library for JavaScript.
 
 ## Installation
 ``` shell
