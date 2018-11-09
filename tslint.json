@@ -64,6 +64,7 @@
     "object-literal-sort-keys": false,
     "object-literal-key-quotes": [true, "consistent"],
     "one-line": [true, "check-open-brace", "check-whitespace"],
+    "ordered-imports": false,
     "prefer-conditional-expression": true,
     "prefer-readonly": true,
     "prefer-while": true,
