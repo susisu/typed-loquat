@@ -1,5 +1,5 @@
 import {
-    AbstractParser,
+    StringParser,
     string,
 } from "..";
 
@@ -8,7 +8,7 @@ type Cons = { car: SExp; cdr: SExp };
 type SExp = Atom | Cons;
 
 // define P<T> as the type of a parser that takes input string and yields T as its result
-type P<T> = AbstractParser<T, string>;
+type P<T> = StringParser<T>;
 
 // make parsers
 const p = string();

@@ -1,12 +1,12 @@
 import {
-    AbstractParser,
+    StringParser,
     Operator,
     OperatorAssoc,
     string,
 } from "..";
 
 // define P<T> as the type of a parser that takes input string and yields T as its result
-type P<T> = AbstractParser<T, string>;
+type P<T> = StringParser<T>;
 
 // make parsers
 const p = string();
