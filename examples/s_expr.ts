@@ -4,8 +4,8 @@ import {
 } from "..";
 
 type Atom = string | null;
-type Cons = { car: SExp; cdr: SExp };
-type SExp = Atom | Cons;
+type Cons = { car: SExpr; cdr: SExpr };
+type SExpr = Atom | Cons;
 
 // define P<T> as the type of a parser that takes input string and yields T as its result
 type P<T> = StringParser<T>;
@@ -22,7 +22,7 @@ function lexeme<T>(parser: P<T>): P<T> {
 }
 
 // expr ::= atom | list
-const expr: P<SExp> = p.lazy(() => p.choice([
+const expr: P<SExpr> = p.lazy(() => p.choice([
     atom,
     list,
 ])).label("expression");
@@ -36,17 +36,17 @@ const atom = lexeme(p.do<Atom>(function* () {
 })).label("atom");
 
 // list ::= "(" expr* ["." expr] ")"
-const list = p.do<SExp>(function* () {
+const list = p.do<SExpr>(function* () {
     yield lexeme(p.char("("));
-    const xs: SExp[] = yield expr.many();
-    const x: SExp = yield p.option(null, lexeme(p.char(".")).and(expr));
+    const xs: SExpr[] = yield expr.many();
+    const x: SExpr = yield p.option(null, lexeme(p.char(".")).and(expr));
     yield lexeme(p.char(")"));
-    return xs.reduceRight((ys: SExp, y: SExp) => ({ car: y, cdr: ys }), x);
+    return xs.reduceRight((ys: SExpr, y: SExpr) => ({ car: y, cdr: ys }), x);
 }).label("list");
 
-const parser: P<SExp> = spaces.and(expr).skip(p.eof);
+const parser: P<SExpr> = spaces.and(expr).skip(p.eof);
 
-export function parseSExp(src: string): SExp {
+export function parseSExpr(src: string): SExpr {
     const res = parser.parse("", src);
     if (res.success) {
         return res.value;

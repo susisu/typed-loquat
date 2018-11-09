@@ -1,11 +1,11 @@
 import "jest";
 
-import { parseSExp } from "../s_exp";
+import { parseSExpr } from "../s_expr";
 
-describe("s_exp", () => {
-    test("S expressions", () => {
-        expect(parseSExp("()")).toEqual(null);
-        expect(parseSExp("(foo bar baz)")).toEqual({
+describe("s_expr", () => {
+    test("S-expressions", () => {
+        expect(parseSExpr("()")).toEqual(null);
+        expect(parseSExpr("(foo bar baz)")).toEqual({
             car: "foo",
             cdr: {
                 car: "bar",
@@ -15,7 +15,7 @@ describe("s_exp", () => {
                 },
             },
         });
-        expect(parseSExp("(foo (bar baz) . qux)")).toEqual({
+        expect(parseSExpr("(foo (bar baz) . qux)")).toEqual({
             car: "foo",
             cdr: {
                 car: {
